@@ -148,7 +148,11 @@ export default function Negotiation({ caseData, forecast, onOffer, onRespond, bu
             <div className="section-label">
               {open ? `Counter the ${PARTY_LABEL[open.proposed_by].toLowerCase()}'s offer` : "Propose terms"}
             </div>
-            <div className="grid grid--3">
+            {/* Amount only exists for a partial refund. The other three types imply
+                their own figure — a full refund is the disputed sum, a replacement is
+                goods rather than money, a withdrawal moves nothing — so the field is
+                absent rather than present and dead. */}
+            <div className={needsAmount ? "grid grid--3" : "grid grid--2"}>
               <label className="field">
                 <span className="field__label">Proposing as</span>
                 <select value={party} onChange={(e) => setParty(e.target.value)}>
@@ -158,23 +162,23 @@ export default function Negotiation({ caseData, forecast, onOffer, onRespond, bu
               </label>
               <label className="field">
                 <span className="field__label">Terms</span>
-                <select value={type} onChange={(e) => setType(e.target.value)}>
+                <select value={type} onChange={(e) => { setType(e.target.value); setAmount(""); }}>
                   {OFFER_TYPES.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
                 </select>
               </label>
-              <label className="field">
-                <span className="field__label">
-                  Amount {needsAmount ? `(max ${money(caseData.amount)})` : "(n/a)"}
-                </span>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={needsAmount ? amount : ""}
-                  disabled={!needsAmount}
-                  placeholder={needsAmount ? "0.00" : "—"}
-                  onChange={(e) => setAmount(e.target.value)}
-                />
-              </label>
+              {needsAmount && (
+                <label className="field">
+                  <span className="field__label">Amount (max {money(caseData.amount)})</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={amount}
+                    placeholder="0.00"
+                    autoFocus
+                    onChange={(e) => setAmount(e.target.value)}
+                  />
+                </label>
+              )}
             </div>
             <label className="field">
               <span className="field__label">Message (optional)</span>
