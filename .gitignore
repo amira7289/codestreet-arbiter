@@ -15,6 +15,4 @@ frontend/.playwright-cli/
 
 # Local dev tooling (not part of the hackathon deliverable)
 .claude/
-.windsurf/
 .devin/
-squad-method/

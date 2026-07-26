@@ -1,6 +1,17 @@
 import { useState } from "react";
 
-const EVIDENCE_TYPES = ["tracking_data", "policy_text", "receipt", "email", "chat_log", "photo"];
+// Must stay in step with models.EvidenceType. processor_ledger was missing, so a party
+// could not manually file the one evidence type carrying the heaviest weights in the
+// catalog — the settlement record that decides duplicate-charge and refund disputes.
+const EVIDENCE_TYPES = [
+  "tracking_data",
+  "processor_ledger",
+  "policy_text",
+  "receipt",
+  "email",
+  "chat_log",
+  "photo",
+];
 
 export default function EvidenceForm({ submittedBy, onSubmit }) {
   const [evidenceType, setEvidenceType] = useState(EVIDENCE_TYPES[0]);
@@ -24,7 +35,7 @@ export default function EvidenceForm({ submittedBy, onSubmit }) {
       <select value={evidenceType} onChange={(e) => setEvidenceType(e.target.value)}>
         {EVIDENCE_TYPES.map((t) => (
           <option key={t} value={t}>
-            {t.replace("_", " ")}
+            {t.replace(/_/g, " ")}
           </option>
         ))}
       </select>

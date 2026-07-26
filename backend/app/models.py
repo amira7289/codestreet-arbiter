@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import Column, DateTime, Enum, Float, ForeignKey, Integer, JSON, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Enum, Float, ForeignKey, Integer, JSON, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -33,6 +33,7 @@ class EvidenceType(str, enum.Enum):
     email = "email"
     chat_log = "chat_log"
     photo = "photo"
+    processor_ledger = "processor_ledger"
 
 
 class DisputeCase(Base):
@@ -52,6 +53,7 @@ class DisputeCase(Base):
     evidence = relationship("Evidence", back_populates="case", cascade="all, delete-orphan")
     signals = relationship("ScoreSignal", back_populates="case", cascade="all, delete-orphan")
     verdict = relationship("Verdict", back_populates="case", uselist=False, cascade="all, delete-orphan")
+    gather_log = relationship("GatherLog", back_populates="case", cascade="all, delete-orphan")
 
 
 class Evidence(Base):
@@ -63,9 +65,33 @@ class Evidence(Base):
     evidence_type = Column(Enum(EvidenceType), nullable=False)
     raw_content = Column(Text, nullable=False)
     parsed_facts = Column(JSON, nullable=True)
+    # Which system produced this — a connector name, or "manual_upload" when a party
+    # pasted it in. auto_gathered is denormalised from it so the UI can badge items
+    # without knowing the connector inventory.
+    source = Column(String, nullable=False, default="manual_upload")
+    auto_gathered = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     case = relationship("DisputeCase", back_populates="evidence")
+
+
+class GatherLog(Base):
+    """One row per source queried, hit or miss. Misses are the point: an adverse
+    inference against a party is only defensible when the record shows the system
+    asked their systems and got nothing back."""
+
+    __tablename__ = "gather_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    case_id = Column(Integer, ForeignKey("dispute_cases.id"), nullable=False)
+    source = Column(String, nullable=False)
+    status = Column(String, nullable=False)
+    latency_ms = Column(Integer, nullable=False)
+    summary = Column(String, nullable=False)
+    evidence_id = Column(Integer, ForeignKey("evidence.id"), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    case = relationship("DisputeCase", back_populates="gather_log")
 
 
 class ScoreSignal(Base):
@@ -77,6 +103,10 @@ class ScoreSignal(Base):
     detail = Column(String, nullable=False)
     weight = Column(Float, nullable=False)
     favors = Column(Enum(Party), nullable=True)
+    # Every document this signal was read from. A list because corroborating filings
+    # collapse into one signal and all of them were still examined; empty for
+    # procedural and disclosed-policy signals, which arise from the shape of the case.
+    evidence_ids = Column(JSON, nullable=False, default=list)
 
     case = relationship("DisputeCase", back_populates="signals")
 
@@ -91,6 +121,11 @@ class Verdict(Base):
     merchant_score = Column(Float, nullable=False)
     confidence = Column(Float, nullable=False)
     explanation = Column(Text, nullable=False)
+    reason_code = Column(String, nullable=True)
+    reason_code_label = Column(String, nullable=True)
+    # Deterministic "what would have had to be different" statement, derived by
+    # arithmetic over the scorecard rather than generated, so it cannot drift.
+    counterfactual = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     case = relationship("DisputeCase", back_populates="verdict")

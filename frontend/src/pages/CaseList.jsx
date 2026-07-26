@@ -6,12 +6,41 @@ import StatusBadge from "../components/StatusBadge";
 export default function CaseList() {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    api.listCases().then(setCases).finally(() => setLoading(false));
-  }, []);
+  function load() {
+    setLoading(true);
+    setError(null);
+    api
+      .listCases()
+      .then((rows) => {
+        setCases(rows);
+        setError(null);
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(load, []);
 
   if (loading) return <p>Loading cases...</p>;
+
+  // This is the landing page. With no catch, a backend that is not up yet rendered
+  // bare column headers and nothing else — an empty list reads as "no disputes",
+  // not as "the API is down".
+  if (error) {
+    return (
+      <div>
+        <h1>Dispute Cases</h1>
+        <p style={{ color: "#b91c1c" }}>Could not reach the API: {error}</p>
+        <p style={{ color: "#6b7280", fontSize: "0.85rem" }}>
+          Start the backend with <code>uvicorn app.main:app --port 8000</code> from the{" "}
+          <code>backend</code> directory, then retry.
+        </p>
+        <button onClick={load}>Retry</button>
+      </div>
+    );
+  }
 
   return (
     <div>

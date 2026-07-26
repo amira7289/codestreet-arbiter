@@ -34,3 +34,31 @@ select {
 a {
   color: #1d4ed8;
 }
+
+/* The one rule that cannot be an inline style: both party panels sit side by side so
+   each side can watch the other file, and collapse to a single column before the
+   columns get too narrow to read. */
+.split-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* Grid items default to min-width:auto, so a wide <pre> of parsed facts sets the
+   track's floor and pushes the merchant panel off the right of the viewport. Without
+   this the split view — the whole point of the layout — is half off-screen at 1280px. */
+.split-view > * {
+  min-width: 0;
+}
+
+.split-view pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 900px) {
+  .split-view {
+    grid-template-columns: 1fr;
+  }
+}
