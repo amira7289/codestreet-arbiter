@@ -7,7 +7,8 @@ backend/disputes.db
 # Node
 frontend/node_modules/
 frontend/dist/
-frontend/.playwright-cli/
+# Browser-automation scratch output; playwright-cli drops these wherever it is run.
+.playwright-cli/
 
 # Editor / OS
 .DS_Store
