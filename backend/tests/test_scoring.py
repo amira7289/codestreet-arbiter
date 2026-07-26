@@ -123,19 +123,24 @@ def test_no_case_reaches_full_confidence_on_one_small_signal():
 # --- tie-breaking and disclosure (D7) --------------------------------------
 
 def test_tie_emits_disclosure_signal_and_goes_to_card_member():
-    case = FakeCase(claim_type="refund_not_processed")
+    """A real 20-20 tie built through the scorer, not a hand-assembled list:
+    one delivery signed by the card member at an unparseable address (20 merchant),
+    one parcel stale in transit (20 card member)."""
+    from datetime import datetime
+
+    case = FakeCase(claim_type="item_not_received", name="Priya Sharma",
+                    created_at=datetime(2026, 7, 1))
     evidence = [
-        FakeEvidence("policy_text", {"refund_allowed": True, "return_window_days": 30}),
-        FakeEvidence("processor_ledger", {"refund_issued": True, "refund_amount": 100.0,
-                                          "auth_count": 1, "settlement_count": 1,
-                                          "settlement_amounts": [100.0],
-                                          "minutes_between_settlements": None}),
+        tracking(status="delivered", delivered_at="Dunmore 41022", signed_by="P. Sharma"),
+        tracking(status="in_transit", last_scan_at="2026-05-20"),
     ]
     signals, winner, cm, m, conf = score_case(case, evidence)
-    # policy_allows_refund 15 vs refund_posted_in_ledger 30 — not a tie; force one.
-    signals = [Signal("a", "a", 15, "card_member"), Signal("b", "b", 15, "merchant")]
-    assert sum(s.weight for s in signals if s.favors == "card_member") == \
-           sum(s.weight for s in signals if s.favors == "merchant")
+
+    assert cm == m == 20.0, names(signals)
+    assert winner == "card_member", "ties resolve to the card member by policy"
+    assert "tie_break_provisional_credit" in names(signals), (
+        "a tie must disclose the rule that decided it, not resolve silently")
+    assert conf == 0.0
 
 
 def test_zero_evidence_emits_provisional_credit_disclosure():
@@ -319,3 +324,17 @@ def test_corroborating_documents_are_all_recorded_as_read():
     mismatch = next(s for s in signals if s.signal_name == "address_mismatch")
     assert sorted(mismatch.evidence_ids) == sorted([a.id, b.id])
     assert "corroborated by 2" in mismatch.detail
+
+
+def test_same_number_same_city_different_street_is_mismatch():
+    """Exercises the street-similarity threshold in isolation. Both other guards —
+    house number and locality — agree here, so only token overlap can catch it."""
+    assert _address_verdict("5 Elm St, Boston", "5 Main St, Boston") == "mismatch"
+
+
+def test_street_similarity_threshold_is_load_bearing():
+    """Guards the constant itself: relaxing it must break something."""
+    from app.scoring import _STREET_SIMILARITY
+
+    assert 0 < _STREET_SIMILARITY <= 1.0
+    assert _address_verdict("5 Oak Street, Boston", "5 Oak St, Boston") == "match"
