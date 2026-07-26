@@ -1,0 +1,48 @@
+# Render Blueprint — deploys both services and wires them to each other.
+#
+# In Render: New → Blueprint → connect this repo → Apply.
+# The cross-service references below mean neither URL has to be pasted by hand:
+# the frontend learns the API host, and the API learns which origin to allow.
+services:
+  - type: web
+    name: arbiter-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # Free instances have an ephemeral filesystem, so the database is rebuilt from
+    # the seed on every boot. `seed()` is a no-op when data already exists, so this
+    # is safe on a persistent disk too if the plan is ever upgraded.
+    startCommand: python -m app.seed && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: DATABASE_PATH
+        value: ./disputes.db
+      - key: CORS_ORIGINS
+        fromService:
+          type: web
+          name: arbiter-web
+          property: host
+
+  - type: web
+    name: arbiter-web
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      # Vite inlines this at build time, so it must be present during the build,
+      # not at runtime.
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: arbiter-api
+          property: host
+    routes:
+      # Client-side routing: /cases/9 is a React route, not a file on disk.
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -1,6 +1,15 @@
 // Baked in at build time by Vite. Falls back to localhost so `npm run dev` needs no
 // configuration; a deployed build passes VITE_API_URL and points at the real API.
-const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+//
+// Render's blueprint supplies a cross-service reference as a bare hostname with no
+// scheme ("arbiter-api.onrender.com"), which fetch() treats as a relative path. Add
+// https:// when it is missing rather than making the deploy config paste URLs by hand.
+function resolveBase(raw) {
+  const value = (raw ?? "http://localhost:8000").trim().replace(/\/+$/, "");
+  return /^https?:\/\//.test(value) ? value : `https://${value}`;
+}
+
+const BASE_URL = resolveBase(import.meta.env.VITE_API_URL);
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {

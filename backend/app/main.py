@@ -23,7 +23,19 @@ _DEV_ORIGINS = [
 # A deployed frontend lives on a domain this list cannot know, so it is supplied at
 # runtime. Missing it is the single most likely cause of a deployment that renders
 # but shows no data.
-_EXTRA = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
+def _origin(value: str) -> str:
+    """Accept a bare hostname as well as a full origin.
+
+    Render's blueprint passes a cross-service reference as just the host, and an
+    entry without a scheme never matches an Origin header — the deployment would
+    render but every request would fail CORS, which is the least obvious way for
+    this to break.
+    """
+    value = value.strip().rstrip("/")
+    return value if value.startswith(("http://", "https://")) else f"https://{value}"
+
+
+_EXTRA = [_origin(o) for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
