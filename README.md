@@ -60,7 +60,7 @@ Each retrieved document goes through `backend/app/llm.py`, which turns free text
 
 ### 2. Fair-weighing model
 
-`backend/app/scoring.py` — a transparent weighted scorecard, with every weight in one `SIGNAL_CATALOG` table so it can be printed, audited and tuned in one place. 24 signals across four claim types. A selection:
+`backend/app/scoring.py` — a transparent weighted scorecard, with every weight in one `SIGNAL_CATALOG` table so it can be printed, audited and tuned in one place. 25 signals across four claim types. A selection:
 
 | Signal | Favours | Weight |
 |---|---|---|
@@ -96,7 +96,7 @@ There is also a **"Recommended for human review"** banner, which fires when a pa
 ### 5. Test and optimise
 
 ```
-pytest backend/tests -q          75 tests
+pytest backend/tests -q          78 tests
 python -m app.evaluate           accuracy, fairness, calibration, latency
 GET /metrics                     the same numbers, live
 ```

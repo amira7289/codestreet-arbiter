@@ -60,7 +60,7 @@ Nobody occupies the neutral, two-sided, transparent seat.
 messy evidence  ──LLM──▶  typed facts  ──scorecard──▶  verdict  ──LLM──▶  narration
                                             ▲
                                    the decision lives HERE
-                                   24 weights, one table
+                                   25 weights, one table
 ```
 
 The decision never sits in the model.
@@ -92,7 +92,7 @@ Filing a dispute triggers a fan-out across **four routed sources**:
 
 ## Slide 6 — Task 2: The scorecard
 
-24 signals in one auditable table. A selection:
+25 signals in one auditable table. A selection:
 
 | Signal | Favours | Weight |
 |---|---|---|
@@ -154,14 +154,14 @@ The counterfactual is **arithmetic over the scorecard**, not generation. It cann
 
 Plus: a **"Recommended for human review"** banner when a party filed evidence no rule reads, or confidence is under 35%.
 
-> *Layer 3 is the one to dwell on. It answers the only question a losing party actually asks — and because it's arithmetic, we can prove it's correct. It was brute-forced against 4,000 randomised scorecards.*
+> *Layer 3 is the one to dwell on. It answers the only question a losing party actually asks — and because it's arithmetic, we can prove it's correct. It was brute-forced against 3,000 randomised scorecards, plus 4,000 in an earlier pass.*
 
 ---
 
 ## Slide 10 — Task 5: Measured, not asserted
 
 ```
-pytest backend/tests -q       76 tests
+pytest backend/tests -q       78 tests
 python -m app.evaluate        full report
 GET /metrics                  the same numbers, live
 ```
