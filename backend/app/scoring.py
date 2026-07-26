@@ -259,6 +259,16 @@ def score_case(case, evidence_list):
         for f in _facts_of(evidence_list, "processor_ledger")
     )
 
+    # A refund is "owed" when the merchant's own policy or correspondence says so.
+    # Without that, the absence of a refund proves nothing that the claim did not
+    # already assert.
+    refund_appears_owed = any(
+        f.get("refund_allowed") is True for f in _facts_of(evidence_list, "policy_text")
+    ) or any(
+        f.get("merchant_admitted_issue") or f.get("refund_already_claimed")
+        for f in _facts_of(evidence_list, "email") + _facts_of(evidence_list, "chat_log")
+    )
+
     # --- carrier / delivery ------------------------------------------------
     for e in evidence_list:
         if e.evidence_type != "tracking_data" or not e.parsed_facts:
@@ -377,9 +387,14 @@ def score_case(case, evidence_list):
             if refund_issued:
                 _emit(signals, "refund_posted_in_ledger",
                       "Processor ledger shows a refund was posted for this transaction", e)
-            else:
+            elif refund_appears_owed:
+                # Only evidence once a refund is shown to be due. On a
+                # refund-not-processed claim "no refund was posted" is the complaint
+                # restated, and scoring it unconditionally handed the card member
+                # points for filing the dispute at all.
                 _emit(signals, "no_refund_in_ledger",
-                      "Processor ledger shows no refund was ever posted for this transaction", e)
+                      "Processor ledger shows no refund was posted, though the merchant's "
+                      "own policy or correspondence indicates one was due", e)
 
     # --- condition of goods ------------------------------------------------
     if case.claim_type == "not_as_described":

@@ -96,26 +96,26 @@ There is also a **"Recommended for human review"** banner, which fires when a pa
 ### 5. Test and optimise
 
 ```
-pytest backend/tests -q          78 tests
+pytest backend/tests -q          90 tests
 python -m app.evaluate           accuracy, fairness, calibration, latency
 GET /metrics                     the same numbers, live
 ```
 
-Measured on a 25-case labelled corpus (`backend/tests/goldens.json`) — the 15 seeded cases plus 10 adversarial ones built to break specific heuristics:
+Measured on a 60-case labelled corpus (`backend/tests/goldens.json`), weighted toward contested and adversarial shapes on purpose — adding easy cases would lift the figure without making it more informative:
 
 | Metric | Value |
 |---|---|
-| **Accuracy** | **95%** (21/22 arbitrable; 3 abstentions excluded) |
-| By claim type | item_not_received 100%, duplicate_charge 100%, refund_not_processed 100%, not_as_described 75% |
-| Adversarial subset | 100% (9/9) |
-| Verdicts vs labels favouring card member | 56% vs 56% |
+| **Accuracy** | **98%** (53/54 arbitrable; 6 abstentions excluded) |
+| By claim type | item_not_received 100%, duplicate_charge 100%, refund_not_processed 100%, not_as_described 90% |
+| Adversarial subset | 100% (20/20) |
+| Fairness | bias_gap 0.032 · recall 97% card member / 100% merchant |
 | Errors favouring card member | 0 |
 | Confidently wrong (≥80%) | 0 |
 | p95 latency, parse + score + explain | 0.2 ms offline |
 
 `backend/tests/test_fairness.py` runs two audits in CI: a **catalog asymmetry audit** that fails on any weight imbalance not documented with a written justification, and **party-swap tests** asserting identical evidence is worth the same regardless of who benefits.
 
-Progress across phases, on the same corpus: 82% → 91% → **95%**; calibration separation 0.02 → 0.17; cases reporting 100% confidence off a single signal 11 → 0.
+Progress across phases, on the original corpus: 82% → 91% → 95%; then **98%** on a corpus more than twice the size; calibration separation 0.02 → 0.17; cases reporting 100% confidence off a single signal 11 → 0.
 
 ## Data model
 
@@ -166,7 +166,7 @@ The schema changes between phases and `create_all` cannot ALTER tables. If you s
 
 Stated plainly, because a system that reports its own uncertainty is the point.
 
-- **The 25 labels are the author's judgement**, not adjudicated ground truth. The measurement discipline is the contribution; the number is only as good as the corpus.
+- **The 60 labels are the author's judgement**, not adjudicated ground truth. The measurement discipline is the contribution; the number is only as good as the corpus.
 - **Connector latencies are synthetic** — derived from a hash of the source and transaction id, not measured. They are a simulation of network cost, not evidence of it.
 - **One known failure** (TX1006): a merchant who files a non-committal chat log avoids the adverse inference for silence while the card member still carries the no-evidence penalty. Filing a meaningless document is currently rewarded.
 - **No abstain verdict.** Genuinely undecidable cases still produce a winner, flagged for human review rather than withheld.

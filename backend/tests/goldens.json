@@ -1,9 +1,9 @@
 {
   "_about": {
     "purpose": "Labelled corpus for measuring scorer accuracy, calibration and fairness. Replayed by `python -m app.evaluate`.",
-    "labelling": "expected_winner is a human judgement by the project author, not adjudicated ground truth. Cases a careful reader cannot decide on the evidence alone are labelled null and excluded from accuracy; they are reported separately as the abstention set.",
+    "labelling": "expected_winner is a human judgement by the project author, not adjudicated ground truth. Cases a careful reader cannot decide on the evidence alone are labelled null and excluded from accuracy; they are reported separately as the abstention set. Cases G026 onward were added to widen the corpus; they are weighted toward contested and adversarial shapes on purpose, because adding easy cases would lift the accuracy figure without making it more informative.",
     "difficulty": "clear = one side is obviously right | contested = both sides have real evidence | adversarial = constructed to break a specific heuristic | unarbitrable = not decidable on the evidence",
-    "fields": "evidence entries are [submitted_by, evidence_type, raw_content]"
+    "fields": "evidence entries are [submitted_by, evidence_type, raw_content] filed_on pins the dispute date for cases where return-window arithmetic matters; without it those cases age against the real clock and silently change answer."
   },
   "cases": [
     {
@@ -15,7 +15,13 @@
       "amount": 299.0,
       "claim_type": "item_not_received",
       "claim_text": "I never received this espresso machine. The tracking shows it wasn't even shipped.",
-      "evidence": [["merchant", "tracking_data", "Label created 2026-06-01. Carrier has not scanned the package since. Status: not shipped."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Label created 2026-06-01. Carrier has not scanned the package since. Status: not shipped."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "clear",
       "rationale": "Carrier never scanned the parcel; merchant cannot show shipment."
@@ -29,7 +35,13 @@
       "amount": 150.0,
       "claim_type": "item_not_received",
       "claim_text": "Card member claims non-receipt, but tracking shows delivery.",
-      "evidence": [["merchant", "tracking_data", "Package delivered to 12 Pine Ave, Rivertown, signed by M. Torres."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Package delivered to 12 Pine Ave, Rivertown, signed by M. Torres."
+        ]
+      ],
       "expected_winner": "merchant",
       "difficulty": "clear",
       "rationale": "Delivered to the address on file and signed by the card member by name."
@@ -43,7 +55,13 @@
       "amount": 89.5,
       "claim_type": "item_not_received",
       "claim_text": "I never got my order; the shipping address on the label doesn't even match mine.",
-      "evidence": [["merchant", "tracking_data", "Package delivered to 200 Birch Court, Millbrook, signed by unknown recipient."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Package delivered to 200 Birch Court, Millbrook, signed by unknown recipient."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "clear",
       "rationale": "Delivered to a different address entirely, signed by an unnamed recipient."
@@ -57,7 +75,13 @@
       "amount": 499.0,
       "claim_type": "refund_not_processed",
       "claim_text": "I returned this laptop stand three weeks ago and still haven't been refunded.",
-      "evidence": [["merchant", "policy_text", "Our return policy allows returns within 30 days for a full refund."]],
+      "evidence": [
+        [
+          "merchant",
+          "policy_text",
+          "Our return policy allows returns within 30 days for a full refund."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "contested",
       "rationale": "Merchant's own policy permits the refund and none was issued."
@@ -71,7 +95,13 @@
       "amount": 60.0,
       "claim_type": "refund_not_processed",
       "claim_text": "I want a refund but the merchant says no refunds are given.",
-      "evidence": [["merchant", "policy_text", "All sales are final. No refunds or exchanges under any circumstances."]],
+      "evidence": [
+        [
+          "merchant",
+          "policy_text",
+          "All sales are final. No refunds or exchanges under any circumstances."
+        ]
+      ],
       "expected_winner": "merchant",
       "difficulty": "contested",
       "rationale": "Disclosed final-sale policy and no allegation the goods were faulty."
@@ -85,7 +115,13 @@
       "amount": 45.0,
       "claim_type": "not_as_described",
       "claim_text": "The produce box I received was moldy and nothing like the photos.",
-      "evidence": [["merchant", "chat_log", "Customer support: We're sorry for the inconvenience, we'll look into this."]],
+      "evidence": [
+        [
+          "merchant",
+          "chat_log",
+          "Customer support: We're sorry for the inconvenience, we'll look into this."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "contested",
       "rationale": "Perishable goods claim the merchant never rebutted; support acknowledged contact but produced no counter-evidence."
@@ -113,7 +149,13 @@
       "amount": 999.0,
       "claim_type": "duplicate_charge",
       "claim_text": "I was charged twice for the same order.",
-      "evidence": [["card_member", "receipt", "Order confirmation email received once, dated 2026-06-10."]],
+      "evidence": [
+        [
+          "card_member",
+          "receipt",
+          "Order confirmation email received once, dated 2026-06-10."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "contested",
       "rationale": "One order confirmation against two charges, and the merchant produced nothing."
@@ -127,7 +169,13 @@
       "amount": 340.0,
       "claim_type": "item_not_received",
       "claim_text": "Merchant claims delivery but I never got anything, and the address doesn't match at all.",
-      "evidence": [["merchant", "tracking_data", "Delivered to 900 Industrial Pkwy, Warehouse District, signed by Receiving Dept."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered to 900 Industrial Pkwy, Warehouse District, signed by Receiving Dept."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "clear",
       "rationale": "Delivered to a commercial address unrelated to the card member, signed by a role rather than a person."
@@ -141,7 +189,13 @@
       "amount": 25.0,
       "claim_type": "item_not_received",
       "claim_text": "Tracking shows it's still in transit, but it's been a month.",
-      "evidence": [["merchant", "tracking_data", "Package scanned at regional facility 2026-05-20, in transit to destination."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Package scanned at regional facility 2026-05-20, in transit to destination."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "contested",
       "rationale": "In transit for over a month with no further scan; non-delivery is the reasonable inference."
@@ -156,8 +210,16 @@
       "claim_type": "refund_not_processed",
       "claim_text": "Merchant admitted the item was defective in chat but never refunded me.",
       "evidence": [
-        ["merchant", "chat_log", "We apologize for the defective unit and will process this for you."],
-        ["merchant", "policy_text", "Refunds are provided within 14 days for defective items."]
+        [
+          "merchant",
+          "chat_log",
+          "We apologize for the defective unit and will process this for you."
+        ],
+        [
+          "merchant",
+          "policy_text",
+          "Refunds are provided within 14 days for defective items."
+        ]
       ],
       "expected_winner": "card_member",
       "difficulty": "clear",
@@ -172,7 +234,13 @@
       "amount": 210.0,
       "claim_type": "item_not_received",
       "claim_text": "Package was returned to sender apparently, but I was home all day.",
-      "evidence": [["merchant", "tracking_data", "Package returned to sender after failed delivery attempt."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Package returned to sender after failed delivery attempt."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "clear",
       "rationale": "Goods went back to the merchant, so the card member paid for nothing."
@@ -186,7 +254,13 @@
       "amount": 65.0,
       "claim_type": "not_as_described",
       "claim_text": "Item arrived damaged and merchant provided a photo showing packaging was fine.",
-      "evidence": [["merchant", "photo", "Photo shows the shipping box fully intact with no visible damage."]],
+      "evidence": [
+        [
+          "merchant",
+          "photo",
+          "Photo shows the shipping box fully intact with no visible damage."
+        ]
+      ],
       "expected_winner": "merchant",
       "difficulty": "contested",
       "rationale": "Only positive evidence is the merchant's intact-packaging photo; the card member produced nothing."
@@ -200,7 +274,13 @@
       "amount": 54.0,
       "claim_type": "duplicate_charge",
       "claim_text": "Charged twice, and merchant already refunded one charge via email confirmation.",
-      "evidence": [["merchant", "email", "We've confirmed and refunded the duplicate charge as requested. Sorry for the trouble!"]],
+      "evidence": [
+        [
+          "merchant",
+          "email",
+          "We've confirmed and refunded the duplicate charge as requested. Sorry for the trouble!"
+        ]
+      ],
       "expected_winner": "merchant",
       "difficulty": "adversarial",
       "rationale": "The duplicate was already refunded. Awarding the card member here is a double refund; the apology must not read as an unremedied admission."
@@ -215,14 +295,21 @@
       "claim_type": "item_not_received",
       "claim_text": "Item shows delivered and signed, but the box was empty when I opened it.",
       "evidence": [
-        ["merchant", "tracking_data", "Delivered to 3 Hemlock Row, Bayview, signed by A. Stone."],
-        ["card_member", "chat_log", "I did receive a package but it was empty when I opened it."]
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered to 3 Hemlock Row, Bayview, signed by A. Stone."
+        ],
+        [
+          "card_member",
+          "chat_log",
+          "I did receive a package but it was empty when I opened it."
+        ]
       ],
       "expected_winner": null,
       "difficulty": "unarbitrable",
       "rationale": "A signature proves a box arrived, not its contents. Neither party can prove the contents; this needs a human."
     },
-
     {
       "id": "G016",
       "transaction_id": "TX2001",
@@ -232,7 +319,13 @@
       "amount": 120.0,
       "claim_type": "item_not_received",
       "claim_text": "Never arrived. The tracking address is not my building.",
-      "evidence": [["merchant", "tracking_data", "Delivered to 99 Pine Ave, Rivertown, signed by unknown recipient."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered to 99 Pine Ave, Rivertown, signed by unknown recipient."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "adversarial",
       "rationale": "Same street and city, different building, plus a generic signee. Token-overlap address matching scores this for the merchant."
@@ -246,7 +339,13 @@
       "amount": 260.0,
       "claim_type": "item_not_received",
       "claim_text": "This was delivered to a completely different state.",
-      "evidence": [["merchant", "tracking_data", "Delivered to 5 Elm St, Denver, signed by R. Patel."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered to 5 Elm St, Denver, signed by R. Patel."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "adversarial",
       "rationale": "Different street and different city. Shares only the house number and 'st', which token overlap treats as a match."
@@ -260,7 +359,13 @@
       "amount": 75.0,
       "claim_type": "item_not_received",
       "claim_text": "Carrier left it somewhere without any signature and I never found it.",
-      "evidence": [["merchant", "tracking_data", "Attempted delivery to 40 Harbor Rd, Seaford. Not signed by anyone."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Attempted delivery to 40 Harbor Rd, Seaford. Not signed by anyone."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "adversarial",
       "rationale": "Negated signature. The old regex extracted 'Anyone' as a signee and awarded delivery confirmation."
@@ -274,7 +379,13 @@
       "amount": 42.0,
       "claim_type": "duplicate_charge",
       "claim_text": "I was billed twice for one order.",
-      "evidence": [["merchant", "email", "You were charged twice in error. The second charge has been refunded in full on 2026-06-14."]],
+      "evidence": [
+        [
+          "merchant",
+          "email",
+          "You were charged twice in error. The second charge has been refunded in full on 2026-06-14."
+        ]
+      ],
       "expected_winner": "merchant",
       "difficulty": "adversarial",
       "rationale": "Merchant admits the duplicate but has already remedied it. Upholding the dispute would refund the card member twice."
@@ -289,8 +400,16 @@
       "claim_type": "item_not_received",
       "claim_text": "They refuse to help me and I never got the part.",
       "evidence": [
-        ["merchant", "email", "Sorry, we cannot help you. Our records show the item was delivered correctly."],
-        ["merchant", "tracking_data", "Delivered to 7 Kingsway, Ashgrove, signed by I. Chan."]
+        [
+          "merchant",
+          "email",
+          "Sorry, we cannot help you. Our records show the item was delivered correctly."
+        ],
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered to 7 Kingsway, Ashgrove, signed by I. Chan."
+        ]
       ],
       "expected_winner": "merchant",
       "difficulty": "adversarial",
@@ -306,8 +425,16 @@
       "claim_type": "not_as_described",
       "claim_text": "The vase arrived shattered into pieces.",
       "evidence": [
-        ["card_member", "photo", "Photo shows the ceramic vase shattered into several pieces inside the box."],
-        ["card_member", "receipt", "Order placed 2026-06-02. Ship to 16 Foxglove Ln, Weatherby."]
+        [
+          "card_member",
+          "photo",
+          "Photo shows the ceramic vase shattered into several pieces inside the box."
+        ],
+        [
+          "card_member",
+          "receipt",
+          "Order placed 2026-06-02. Ship to 16 Foxglove Ln, Weatherby."
+        ]
       ],
       "expected_winner": "card_member",
       "difficulty": "clear",
@@ -322,7 +449,13 @@
       "amount": 180.0,
       "claim_type": "refund_not_processed",
       "claim_text": "They will not refund me for a clearance item I changed my mind about.",
-      "evidence": [["merchant", "policy_text", "Clearance items are final sale. We do not offer refunds on clearance stock."]],
+      "evidence": [
+        [
+          "merchant",
+          "policy_text",
+          "Clearance items are final sale. We do not offer refunds on clearance stock."
+        ]
+      ],
       "expected_winner": "merchant",
       "difficulty": "adversarial",
       "rationale": "Explicit no-refund wording. Substring matching on 'no refund' alone misreads several phrasings of this."
@@ -336,7 +469,13 @@
       "amount": 145.0,
       "claim_type": "not_as_described",
       "claim_text": "They sent the wrong model and admitted it, but never fixed it.",
-      "evidence": [["merchant", "email", "Our error. We shipped the wrong item and have not yet arranged a replacement."]],
+      "evidence": [
+        [
+          "merchant",
+          "email",
+          "Our error. We shipped the wrong item and have not yet arranged a replacement."
+        ]
+      ],
       "expected_winner": "card_member",
       "difficulty": "adversarial",
       "rationale": "A genuine admission of fault containing no apology wording, which keyword matching on 'sorry' misses entirely."
@@ -350,7 +489,13 @@
       "amount": 55.0,
       "claim_type": "item_not_received",
       "claim_text": "The tracking is too vague to tell where this went.",
-      "evidence": [["merchant", "tracking_data", "Delivered to Dunmore 41022, signed by M. Hale."]],
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered to Dunmore 41022, signed by M. Hale."
+        ]
+      ],
       "expected_winner": "merchant",
       "difficulty": "adversarial",
       "rationale": "Address is unparseable and must award neither side, but the signature matches the card member by name and carries the case."
@@ -365,12 +510,768 @@
       "claim_type": "not_as_described",
       "claim_text": "The sealed box was delivered but the headphones inside were counterfeit.",
       "evidence": [
-        ["merchant", "tracking_data", "Delivered to 60 Alder Cres, Kingsmere, signed by Y. Sultan."],
-        ["card_member", "chat_log", "The box arrived sealed but what is inside is not the product I paid for."]
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered to 60 Alder Cres, Kingsmere, signed by Y. Sultan."
+        ],
+        [
+          "card_member",
+          "chat_log",
+          "The box arrived sealed but what is inside is not the product I paid for."
+        ]
       ],
       "expected_winner": null,
       "difficulty": "unarbitrable",
       "rationale": "Delivery is undisputed; the dispute is about contents and authenticity, which neither party can evidence here."
+    },
+    {
+      "id": "G026",
+      "transaction_id": "TX3001",
+      "card_member_name": "Rosa Delgado",
+      "card_member_address": "14 Alder Way, Kingsmere",
+      "merchant_name": "NorthPeak",
+      "amount": 180.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Never arrived.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-05 to 14 Alder Way, Kingsmere, signed by R. Delgado."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "clear",
+      "rationale": "Right address, cardholder's own signature.",
+      "filed_on": "2026-06-20"
+    },
+    {
+      "id": "G027",
+      "transaction_id": "TX3002",
+      "card_member_name": "Rosa Delgado",
+      "card_member_address": "14 Alder Way, Kingsmere",
+      "merchant_name": "NorthPeak",
+      "amount": 180.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Never arrived.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-05 to 14 Alder Way, Kingsmere, signed by T. Whitmore."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "contested",
+      "rationale": "Delivered to the card member's own address; a third party signing there is ordinary. Originally labelled for the card member, which was too harsh — delivery to the right door is strong evidence even without their signature."
+    },
+    {
+      "id": "G028",
+      "transaction_id": "TX3003",
+      "card_member_name": "Owen Frost",
+      "card_member_address": "5 Main St, Boston",
+      "merchant_name": "Atlas",
+      "amount": 95.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Wrong state entirely.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-02 to 5 Main St, Denver, signed by O. Frost."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "adversarial",
+      "rationale": "Same number, same street name, different city. Only the locality guard catches it."
+    },
+    {
+      "id": "G029",
+      "transaction_id": "TX3004",
+      "card_member_name": "Ines Moreau",
+      "card_member_address": "22 Quarry Rd, Selby",
+      "merchant_name": "Lumen",
+      "amount": 260.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Nothing came.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-08 to 22 Quarry Road, Selby, signed by I. Moreau."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "adversarial",
+      "rationale": "Rd vs Road — a suffix spelling difference must not read as a different address."
+    },
+    {
+      "id": "G030",
+      "transaction_id": "TX3005",
+      "card_member_name": "Caleb Nwosu",
+      "card_member_address": "61 Harbour View, Tolbury",
+      "merchant_name": "Drift Audio",
+      "amount": 410.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Left somewhere, never found it.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Attempted delivery 2026-06-03 to 61 Harbour View, Tolbury. Not signed for by anyone."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "adversarial",
+      "rationale": "Negated signature. Delivery to the right address without receipt is not proof."
+    },
+    {
+      "id": "G031",
+      "transaction_id": "TX3006",
+      "card_member_name": "Petra Novak",
+      "card_member_address": "8 Foxglove Ln, Ashby",
+      "merchant_name": "Bluewater",
+      "amount": 75.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Carrier says it went back.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Package returned to sender 2026-06-11 after failed delivery attempt."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "clear",
+      "rationale": "Goods went back to the merchant; the cardholder paid for nothing."
+    },
+    {
+      "id": "G032",
+      "transaction_id": "TX3007",
+      "card_member_name": "Yusuf Demir",
+      "card_member_address": "3 Kiln Court, Ravensden",
+      "merchant_name": "Ironwood",
+      "amount": 520.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Still says in transit after six weeks.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Package scanned at regional facility 2026-05-12, in transit. No further scans."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "contested",
+      "rationale": "Stale in transit well beyond any plausible delivery window."
+    },
+    {
+      "id": "G033",
+      "transaction_id": "TX3008",
+      "card_member_name": "Zara Mensah",
+      "card_member_address": "19 Willow Bank, Cranleigh",
+      "merchant_name": "Everline",
+      "amount": 130.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Not shipped at all.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Label created 2026-06-14. Carrier has not scanned the package since. Status: not shipped."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "clear",
+      "rationale": "Carrier never took possession."
+    },
+    {
+      "id": "G034",
+      "transaction_id": "TX3009",
+      "card_member_name": "Hugo Almeida",
+      "card_member_address": "Ravenscourt 90210",
+      "merchant_name": "Copper Kitchen",
+      "amount": 64.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Tracking is useless.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-06 to Ravenscourt 90210, signed by H. Almeida."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "adversarial",
+      "rationale": "Address unparseable on both sides, so it awards nothing; the named signature decides it.",
+      "filed_on": "2026-06-25"
+    },
+    {
+      "id": "G035",
+      "transaction_id": "TX3010",
+      "card_member_name": "Ben Halloran",
+      "card_member_address": "44 Sycamore Dr, Elmsford",
+      "merchant_name": "Circuit & Co",
+      "amount": 320.0,
+      "claim_type": "duplicate_charge",
+      "claim_text": "Billed twice.",
+      "evidence": [
+        [
+          "card_member",
+          "processor_ledger",
+          "AMEX PROCESSOR LEDGER — TX3010 | AUTH x2 | SETTLE x2 ($320.00, $320.00) | GAP 4 min | REFUND none"
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "clear",
+      "rationale": "Two captured settlements minutes apart with no offsetting refund."
+    },
+    {
+      "id": "G036",
+      "transaction_id": "TX3011",
+      "card_member_name": "Ben Halloran",
+      "card_member_address": "44 Sycamore Dr, Elmsford",
+      "merchant_name": "Circuit & Co",
+      "amount": 320.0,
+      "claim_type": "duplicate_charge",
+      "claim_text": "Billed twice.",
+      "evidence": [
+        [
+          "card_member",
+          "processor_ledger",
+          "AMEX PROCESSOR LEDGER — TX3011 | AUTH x2 | SETTLE x2 ($320.00, $320.00) | GAP 3 min | REFUND $320.00"
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "adversarial",
+      "rationale": "The duplicate is real but already refunded. Upholding it pays the cardholder twice."
+    },
+    {
+      "id": "G037",
+      "transaction_id": "TX3012",
+      "card_member_name": "Maya Ellison",
+      "card_member_address": "7 Pond Street, Harlow",
+      "merchant_name": "Petal & Stem",
+      "amount": 58.0,
+      "claim_type": "duplicate_charge",
+      "claim_text": "Two charges showing.",
+      "evidence": [
+        [
+          "card_member",
+          "processor_ledger",
+          "AMEX PROCESSOR LEDGER — TX3012 | AUTH x2 | SETTLE x1 ($58.00) | GAP n/a | REFUND none"
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "contested",
+      "rationale": "Two authorisations but only one capture — the duplicate never hit the statement."
+    },
+    {
+      "id": "G038",
+      "transaction_id": "TX3013",
+      "card_member_name": "Samir Chowdhury",
+      "card_member_address": "2 Beacon Hill, Thornby",
+      "merchant_name": "Foundry",
+      "amount": 210.0,
+      "claim_type": "duplicate_charge",
+      "claim_text": "Charged twice in the same week.",
+      "evidence": [
+        [
+          "card_member",
+          "processor_ledger",
+          "AMEX PROCESSOR LEDGER — TX3013 | AUTH x2 | SETTLE x2 ($210.00, $210.00) | GAP 2880 min | REFUND none"
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "contested",
+      "rationale": "Two days apart is consistent with two orders, but identical amounts and no merchant rebuttal."
+    },
+    {
+      "id": "G039",
+      "transaction_id": "TX3014",
+      "card_member_name": "Delphine Roy",
+      "card_member_address": "31 Anchor Lane, Portmead",
+      "merchant_name": "Verdant",
+      "amount": 47.0,
+      "claim_type": "duplicate_charge",
+      "claim_text": "Double billed.",
+      "evidence": [
+        [
+          "merchant",
+          "email",
+          "We've reviewed this and refunded the second charge in full."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "adversarial",
+      "rationale": "Merchant states the remedy is already done; a bare admission must not also pay out."
+    },
+    {
+      "id": "G040",
+      "transaction_id": "TX3015",
+      "card_member_name": "Grace Whitfield",
+      "card_member_address": "76 Cedar Rise, Ashfield",
+      "merchant_name": "Lumen",
+      "amount": 240.0,
+      "claim_type": "refund_not_processed",
+      "claim_text": "Returned it, no money back.",
+      "evidence": [
+        [
+          "merchant",
+          "policy_text",
+          "Items may be returned within 30 days for a full refund."
+        ],
+        [
+          "card_member",
+          "processor_ledger",
+          "AMEX PROCESSOR LEDGER — TX3015 | AUTH x1 | SETTLE x1 ($240.00) | GAP n/a | REFUND none"
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "clear",
+      "rationale": "Policy permits the refund and the ledger shows none was ever posted."
+    },
+    {
+      "id": "G041",
+      "transaction_id": "TX3016",
+      "card_member_name": "Grace Whitfield",
+      "card_member_address": "76 Cedar Rise, Ashfield",
+      "merchant_name": "Lumen",
+      "amount": 240.0,
+      "claim_type": "refund_not_processed",
+      "claim_text": "No refund received.",
+      "evidence": [
+        [
+          "card_member",
+          "processor_ledger",
+          "AMEX PROCESSOR LEDGER — TX3016 | AUTH x1 | SETTLE x1 ($240.00) | GAP n/a | REFUND $240.00"
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "contested",
+      "rationale": "The ledger shows the refund was posted; the complaint is about timing, not entitlement."
+    },
+    {
+      "id": "G042",
+      "transaction_id": "TX3017",
+      "card_member_name": "Liam Doherty",
+      "card_member_address": "55 Granary Way, Bexhill",
+      "merchant_name": "Everline",
+      "amount": 89.0,
+      "claim_type": "refund_not_processed",
+      "claim_text": "They won't refund a sale item.",
+      "evidence": [
+        [
+          "merchant",
+          "policy_text",
+          "Clearance stock is final sale. We do not offer refunds on clearance items."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "adversarial",
+      "rationale": "Explicit no-refund wording; substring matching on 'no refund' alone misreads several phrasings."
+    },
+    {
+      "id": "G043",
+      "transaction_id": "TX3018",
+      "card_member_name": "Noor Rahman",
+      "card_member_address": "103 Selwyn Road, Marlow",
+      "merchant_name": "Copper Kitchen",
+      "amount": 175.0,
+      "claim_type": "refund_not_processed",
+      "claim_text": "Admitted it was faulty, never paid.",
+      "evidence": [
+        [
+          "merchant",
+          "chat_log",
+          "We acknowledge the unit was defective and will refund you."
+        ],
+        [
+          "merchant",
+          "policy_text",
+          "Refunds are provided within 14 days for defective items."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "clear",
+      "rationale": "Admission of fault plus a policy that mandates the refund.",
+      "filed_on": "2026-06-25"
+    },
+    {
+      "id": "G044",
+      "transaction_id": "TX3019",
+      "card_member_name": "Tessa Bright",
+      "card_member_address": "9 Rookery Close, Danby",
+      "merchant_name": "Bluewater",
+      "amount": 62.0,
+      "claim_type": "refund_not_processed",
+      "claim_text": "Store credit is not a refund.",
+      "evidence": [
+        [
+          "merchant",
+          "policy_text",
+          "Store credit only; monetary refunds are not available."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "adversarial",
+      "rationale": "A store-credit-only policy is a refusal, though it never uses the phrase 'no refund'."
+    },
+    {
+      "id": "G045",
+      "transaction_id": "TX3020",
+      "card_member_name": "Xiomara Cruz",
+      "card_member_address": "41 Barrow Street, Kelvedon",
+      "merchant_name": "Atlas",
+      "amount": 300.0,
+      "claim_type": "refund_not_processed",
+      "claim_text": "Cancelled before dispatch, still billed.",
+      "evidence": [
+        [
+          "card_member",
+          "processor_ledger",
+          "AMEX PROCESSOR LEDGER — TX3020 | AUTH x1 | SETTLE x1 ($300.00) | GAP n/a | REFUND none"
+        ],
+        [
+          "merchant",
+          "email",
+          "Our records show the order shipped as scheduled and is not eligible."
+        ]
+      ],
+      "expected_winner": null,
+      "difficulty": "unarbitrable",
+      "rationale": "A cancellation the merchant denies and the card member cannot evidence. Neither side put anything on the record; this is a swearing contest, not a case with an answer."
+    },
+    {
+      "id": "G046",
+      "transaction_id": "TX3021",
+      "card_member_name": "Elena Fischer",
+      "card_member_address": "28 Sable Court, Wrenfield",
+      "merchant_name": "Foundry",
+      "amount": 145.0,
+      "claim_type": "not_as_described",
+      "claim_text": "Arrived smashed.",
+      "evidence": [
+        [
+          "card_member",
+          "photo",
+          "Photo shows the ceramic bowl shattered into several pieces."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "clear",
+      "rationale": "Direct photographic evidence of damage from the cardholder."
+    },
+    {
+      "id": "G047",
+      "transaction_id": "TX3022",
+      "card_member_name": "Elena Fischer",
+      "card_member_address": "28 Sable Court, Wrenfield",
+      "merchant_name": "Foundry",
+      "amount": 145.0,
+      "claim_type": "not_as_described",
+      "claim_text": "Says it was damaged.",
+      "evidence": [
+        [
+          "merchant",
+          "photo",
+          "Photo shows the item intact with no visible damage."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "contested",
+      "rationale": "Only positive evidence is the merchant's photograph; the cardholder filed nothing."
+    },
+    {
+      "id": "G048",
+      "transaction_id": "TX3023",
+      "card_member_name": "Keiko Tanaka",
+      "card_member_address": "6 Lantern Yard, Bishopgate",
+      "merchant_name": "Everline",
+      "amount": 210.0,
+      "claim_type": "not_as_described",
+      "claim_text": "Wrong item entirely, and they know.",
+      "evidence": [
+        [
+          "merchant",
+          "email",
+          "Our error. We shipped the wrong item and have not yet arranged a replacement."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "adversarial",
+      "rationale": "A genuine admission containing no apology wording, which keyword matching on 'sorry' misses."
+    },
+    {
+      "id": "G049",
+      "transaction_id": "TX3024",
+      "card_member_name": "Wesley Grant",
+      "card_member_address": "87 Tannery Lane, Ockford",
+      "merchant_name": "Drift Audio",
+      "amount": 380.0,
+      "claim_type": "not_as_described",
+      "claim_text": "Counterfeit, not the brand advertised.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-09 to 87 Tannery Lane, Ockford, signed by W. Grant."
+        ],
+        [
+          "card_member",
+          "chat_log",
+          "The box arrived sealed but the unit inside is not the brand I paid for."
+        ]
+      ],
+      "expected_winner": null,
+      "difficulty": "unarbitrable",
+      "rationale": "Delivery is undisputed; authenticity is not something either side can evidence here."
+    },
+    {
+      "id": "G050",
+      "transaction_id": "TX3025",
+      "card_member_name": "Bianca Ferraro",
+      "card_member_address": "17 Priory Walk, Nettleham",
+      "merchant_name": "Verdant",
+      "amount": 39.0,
+      "claim_type": "not_as_described",
+      "claim_text": "Produce was rotten.",
+      "evidence": [
+        [
+          "merchant",
+          "chat_log",
+          "We're sorry to hear that. However our supplier records show the consignment passed inspection."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "adversarial",
+      "rationale": "A polite denial is not an admission, and the cardholder produced no photograph."
+    },
+    {
+      "id": "G051",
+      "transaction_id": "TX3026",
+      "card_member_name": "Adam Kowalski",
+      "card_member_address": "64 Frampton Road, Ilsley",
+      "merchant_name": "Petal & Stem",
+      "amount": 120.0,
+      "claim_type": "not_as_described",
+      "claim_text": "Not what was pictured.",
+      "evidence": [
+        [
+          "card_member",
+          "photo",
+          "Photo shows the arrangement wilted and missing most of the stems."
+        ],
+        [
+          "card_member",
+          "receipt",
+          "Order placed 2026-06-01. Ship to 64 Frampton Road, Ilsley."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "clear",
+      "rationale": "Photograph of the defect plus a matching receipt."
+    },
+    {
+      "id": "G052",
+      "transaction_id": "TX3027",
+      "card_member_name": "Quentin Blake",
+      "card_member_address": "12 Saltmarsh Road, Dunwich",
+      "merchant_name": "NorthPeak",
+      "amount": 275.0,
+      "claim_type": "item_not_received",
+      "claim_text": "They say delivered, I say no.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-07 to 12 Saltmarsh Road, Dunwich, signed by Q. Blake."
+        ],
+        [
+          "merchant",
+          "email",
+          "Our records show the consignment was released to the address supplied at checkout."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "contested",
+      "rationale": "Named signature at the correct address, corroborated by the merchant's own record."
+    },
+    {
+      "id": "G053",
+      "transaction_id": "TX3028",
+      "card_member_name": "Vera Sokolova",
+      "card_member_address": "150 Cobbler Street, Ryeford",
+      "merchant_name": "Ironwood",
+      "amount": 640.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Delivered to a depot, not to me.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-10 to 900 Industrial Parkway, Ryeford, signed by Receiving Dept."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "clear",
+      "rationale": "Commercial address unrelated to the cardholder, signed by a role rather than a person."
+    },
+    {
+      "id": "G054",
+      "transaction_id": "TX3029",
+      "card_member_name": "Ugo Bianchi",
+      "card_member_address": "5 Tinker's Row, Alderbury",
+      "merchant_name": "Circuit & Co",
+      "amount": 199.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Two carriers, two stories.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-04 to 5 Tinker's Row, Alderbury, signed by U. Bianchi."
+        ],
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-04 to 5 Tinker's Row, Alderbury, signed by U. Bianchi."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "adversarial",
+      "rationale": "The same scan filed twice must corroborate, not double-score."
+    },
+    {
+      "id": "G055",
+      "transaction_id": "TX3030",
+      "card_member_name": "Jonah Reed",
+      "card_member_address": "33 Weaver's Field, Hopton",
+      "merchant_name": "Atlas",
+      "amount": 88.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Nothing from anyone.",
+      "evidence": [],
+      "expected_winner": null,
+      "difficulty": "unarbitrable",
+      "rationale": "No evidence from either party; provisional credit is a policy choice, not a finding."
+    },
+    {
+      "id": "G056",
+      "transaction_id": "TX3031",
+      "card_member_name": "Carmen Ruiz",
+      "card_member_address": "71 Marlborough Gate, Estcourt",
+      "merchant_name": "Lumen",
+      "amount": 455.0,
+      "claim_type": "refund_not_processed",
+      "claim_text": "Merchant went quiet.",
+      "evidence": [
+        [
+          "card_member",
+          "receipt",
+          "Order placed 2026-05-20. Ship to 71 Marlborough Gate, Estcourt."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "contested",
+      "rationale": "Cardholder produced a receipt and the merchant produced nothing at all."
+    },
+    {
+      "id": "G057",
+      "transaction_id": "TX3032",
+      "card_member_name": "Farid Haddad",
+      "card_member_address": "24 Coppice Hill, Bramfield",
+      "merchant_name": "Bluewater",
+      "amount": 112.0,
+      "claim_type": "not_as_described",
+      "claim_text": "Colour is completely different.",
+      "evidence": [
+        [
+          "merchant",
+          "policy_text",
+          "Items may be returned within 30 days of delivery for a full refund."
+        ],
+        [
+          "card_member",
+          "receipt",
+          "Order placed 2026-06-18. Ship to 24 Coppice Hill, Bramfield."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "contested",
+      "rationale": "Disputed inside the merchant's own return window, with nothing filed against it.",
+      "filed_on": "2026-06-25"
+    },
+    {
+      "id": "G058",
+      "transaction_id": "TX3033",
+      "card_member_name": "Oscar Lindqvist",
+      "card_member_address": "98 Hollybush Lane, Netherby",
+      "merchant_name": "Copper Kitchen",
+      "amount": 1250.0,
+      "claim_type": "duplicate_charge",
+      "claim_text": "High-value double charge.",
+      "evidence": [
+        [
+          "card_member",
+          "processor_ledger",
+          "AMEX PROCESSOR LEDGER — TX3033 | AUTH x2 | SETTLE x2 ($1250.00, $1250.00) | GAP 1 min | REFUND none"
+        ],
+        [
+          "merchant",
+          "email",
+          "Our records show two separate orders were placed."
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "contested",
+      "rationale": "One minute apart at an identical amount reads as a double capture, not two orders."
+    },
+    {
+      "id": "G059",
+      "transaction_id": "TX3034",
+      "card_member_name": "Amara Osei",
+      "card_member_address": "36 Larkfield Way, Sedgeworth",
+      "merchant_name": "Everline",
+      "amount": 67.0,
+      "claim_type": "item_not_received",
+      "claim_text": "Signed by someone I don't know.",
+      "evidence": [
+        [
+          "merchant",
+          "tracking_data",
+          "Delivered 2026-06-13 to 36 Larkfield Way, Sedgeworth, signed by front desk."
+        ]
+      ],
+      "expected_winner": "merchant",
+      "difficulty": "contested",
+      "rationale": "Same shape as G027: correct address, generic signee. The signature earns nothing, but the address still does, and that is the right outcome."
+    },
+    {
+      "id": "G060",
+      "transaction_id": "TX3035",
+      "card_member_name": "Devin Park",
+      "card_member_address": "81 Pilgrim Street, Coleford",
+      "merchant_name": "Drift Audio",
+      "amount": 530.0,
+      "claim_type": "refund_not_processed",
+      "claim_text": "Promised a refund weeks ago.",
+      "evidence": [
+        [
+          "merchant",
+          "chat_log",
+          "We're sorry for the inconvenience, we'll look into this."
+        ],
+        [
+          "card_member",
+          "processor_ledger",
+          "AMEX PROCESSOR LEDGER — TX3035 | AUTH x1 | SETTLE x1 ($530.00) | GAP n/a | REFUND none"
+        ]
+      ],
+      "expected_winner": "card_member",
+      "difficulty": "contested",
+      "rationale": "No refund in the ledger and the merchant's reply takes no position."
     }
   ]
 }

@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
+
+from .readable import describe
 
 from .models import CaseStatus, ClaimType, EvidenceType, OfferStatus, OfferType, Party
 
@@ -33,6 +35,13 @@ class EvidenceOut(BaseModel):
     source: str = "manual_upload"
     auto_gathered: bool = False
     created_at: datetime
+
+    @computed_field
+    @property
+    def readable_facts(self) -> list[str]:
+        """Plain English for the parties; parsed_facts stays available underneath
+        for anyone auditing exactly what the parser established."""
+        return describe(self.evidence_type, self.parsed_facts)
 
     class Config:
         from_attributes = True

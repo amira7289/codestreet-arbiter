@@ -11,7 +11,7 @@ Speaker notes sit under each slide in italics. Timings assume a 7-minute pitch p
 
 **A neutral arbiter that shows both sides the same reasoning.**
 
-Weeks → seconds. 95% accurate on a labelled corpus. Every point traceable to a named rule.
+Weeks → seconds. 98% accurate on a 60-case labelled corpus. Every point traceable to a named rule.
 
 *Team / CodeStreet 2026*
 
@@ -161,22 +161,22 @@ Plus: a **"Recommended for human review"** banner when a party filed evidence no
 ## Slide 10 — Task 5: Measured, not asserted
 
 ```
-pytest backend/tests -q       78 tests
+pytest backend/tests -q       90 tests
 python -m app.evaluate        full report
 GET /metrics                  the same numbers, live
 ```
 
-25-case labelled corpus: 15 seeded + **10 adversarial**, each built to break a specific heuristic.
+60-case labelled corpus, deliberately weighted to hard cases: **20 adversarial**, 18 contested, 6 abstentions. Widening it from 25 exposed three real defects, which is what a corpus is for.
 
 | Metric | Value |
 |---|---|
-| **Accuracy** | **95%** (21/22 arbitrable) |
-| Adversarial subset | **100%** (9/9) |
+| **Accuracy** | **98%** (53/54 arbitrable) |
+| Adversarial subset | **100%** (20/20) |
 | Errors favouring card member | **0** |
 | Confidently wrong (≥80%) | **0** |
 | p95 latency (parse + score + explain) | **0.2 ms** |
 
-Progress across phases: **82% → 91% → 95%**. Calibration separation **0.02 → 0.17**. Verdicts at 100% confidence off a single signal: **11 → 0**.
+Progress across phases: **82% → 91% → 95%**, then **98%** on a corpus twice the size. Calibration separation **0.02 → 0.17**. Verdicts at 100% confidence off a single signal: **11 → 0**.
 
 > *The before/after column is the point. We didn't assert improvement, we measured a baseline first and then moved it.*
 
@@ -233,8 +233,8 @@ It structurally cannot. `score_case` takes typed facts and returns the verdict; 
 **"What if the LLM extracts a fact wrong?"**
 Then the scorecard is wrong, visibly, on a named signal pointing at a named document. That's the failure mode we chose: wrong and inspectable beats wrong and opaque. The offline parser returns `None` rather than guessing whenever it can't establish a fact.
 
-**"56% of verdicts favour the card member — isn't that bias?"**
-The labels are 56% too. And of the errors, zero favour the card member. The one directional rule we do have is provisional credit, and it's printed on the verdict.
+**"Isn't it biased toward the card member?"**
+Recall is 97% for the card member and 100% for the merchant — a gap of 0.032. The one directional rule we do have is provisional credit, and it's printed on the verdict.
 
 **"Is this production-ready?"**
 No. Single process, simulated connectors, 25 labels. What is production-ready is the shape: the deterministic core, the audit, and the measurement harness.

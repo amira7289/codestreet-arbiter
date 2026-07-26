@@ -335,17 +335,181 @@ def applicable_sources(claim_type) -> List[str]:
     return list(SOURCE_ROUTING.get(key, []))
 
 
+# ---------------------------------------------------------------------------
+# Synthesis for transactions with no hand-written fixture.
+#
+# Hand-authoring a fixture per case does not scale, and it left a real hole: a
+# dispute filed live during a demo matched nothing and gathered nothing, so the
+# headline feature did nothing on the one case an observer creates themselves.
+#
+# Everything below is derived from sha256(transaction_id), so a given transaction
+# always produces the same evidence — reproducible for tests and stable across a
+# reseed — while still varying across the portfolio.
+# ---------------------------------------------------------------------------
+
+def _roll(transaction_id: str, salt: str, ceiling: int) -> int:
+    digest = hashlib.sha256("{}|{}".format(transaction_id, salt).encode("utf-8")).digest()
+    return int.from_bytes(digest[4:8], "big") % ceiling
+
+
+def _wrong_address(address: str, transaction_id: str) -> str:
+    """Same street, different building — the shape that actually shows up in real
+    misdeliveries, and the one a naive address matcher gets wrong."""
+    parts = address.split(" ", 1)
+    tail = parts[1] if len(parts) > 1 else address
+    return "{} {}".format(100 + _roll(transaction_id, "addr", 800), tail)
+
+
+def _surname(name: str) -> str:
+    bits = [b for b in (name or "").split() if len(b) > 1]
+    return bits[-1] if bits else "Recipient"
+
+
+def _initialled(name: str) -> str:
+    bits = [b for b in (name or "").split() if b]
+    return "{}. {}".format(bits[0][0], bits[-1]) if len(bits) > 1 else (bits[0] if bits else "Recipient")
+
+
+def _synth_carrier(case) -> _Fixture:
+    tx = case.transaction_id
+    outcome = _roll(tx, "carrier", 100)
+    day = 1 + _roll(tx, "day", 27)
+    date = "2026-06-{:02d}".format(day)
+
+    if outcome < 22:
+        return ("tracking_data",
+                "CARRIER TRACKING {}: label created {}. Carrier has not scanned the package since. "
+                "Status: not shipped.".format(tx, date),
+                "Label created {}, no carrier scans since".format(date))
+    if outcome < 34:
+        return ("tracking_data",
+                "CARRIER TRACKING {}: delivery attempted {}, no answer at address. "
+                "Package returned to sender.".format(tx, date),
+                "Delivery failed {}, returned to sender".format(date))
+    if outcome < 46:
+        return ("tracking_data",
+                "CARRIER TRACKING {}: package scanned at regional facility {}, in transit to "
+                "destination. No further scans recorded.".format(tx, date),
+                "Last scan {}, still in transit".format(date))
+    if outcome < 62:
+        return ("tracking_data",
+                "CARRIER TRACKING {}: delivered {} to {}, signed by unknown recipient.".format(
+                    tx, date, _wrong_address(case.card_member_address, tx)),
+                "Delivered {} to a different address".format(date))
+    if outcome < 74:
+        return ("tracking_data",
+                "CARRIER TRACKING {}: delivered {} to {}. No signature captured "
+                "(contactless delivery).".format(tx, date, case.card_member_address),
+                "Delivered {}, no signature captured".format(date))
+    return ("tracking_data",
+            "CARRIER TRACKING {}: delivered {} to {}, signed by {}.".format(
+                tx, date, case.card_member_address, _initialled(case.card_member_name)),
+            "Delivered {}, signed by {}".format(date, _initialled(case.card_member_name)))
+
+
+def _synth_ledger(case) -> _Fixture:
+    tx = case.transaction_id
+    amount = float(case.amount)
+    claim = getattr(case.claim_type, "value", case.claim_type)
+    outcome = _roll(tx, "ledger", 100)
+
+    if claim == "duplicate_charge":
+        if outcome < 55:
+            gap = 2 + _roll(tx, "gap", 8)
+            return ("processor_ledger",
+                    "AMEX PROCESSOR LEDGER — {} | AUTH x2 | SETTLE x2 (${:.2f}, ${:.2f}) | "
+                    "GAP {} min | REFUND none".format(tx, amount, amount, gap),
+                    "2 settlements of ${:.2f}, {} min apart".format(amount, gap))
+        if outcome < 78:
+            return ("processor_ledger",
+                    "AMEX PROCESSOR LEDGER — {} | AUTH x2 | SETTLE x2 (${:.2f}, ${:.2f}) | "
+                    "GAP 3 min | REFUND ${:.2f}".format(tx, amount, amount, amount),
+                    "Duplicate found and already refunded")
+        return ("processor_ledger",
+                "AMEX PROCESSOR LEDGER — {} | AUTH x2 | SETTLE x1 (${:.2f}) | GAP n/a | "
+                "REFUND none".format(tx, amount),
+                "2 authorisations, only 1 captured")
+
+    if claim == "refund_not_processed" and outcome < 30:
+        return ("processor_ledger",
+                "AMEX PROCESSOR LEDGER — {} | AUTH x1 | SETTLE x1 (${:.2f}) | GAP n/a | "
+                "REFUND ${:.2f}".format(tx, amount, amount),
+                "Refund of ${:.2f} already posted".format(amount))
+
+    return ("processor_ledger",
+            "AMEX PROCESSOR LEDGER — {} | AUTH x1 | SETTLE x1 (${:.2f}) | GAP n/a | "
+            "REFUND none".format(tx, amount),
+            "1 settlement of ${:.2f}, no refund posted".format(amount))
+
+
+def _synth_policy(case) -> _Fixture:
+    tx = case.transaction_id
+    outcome = _roll(tx, "policy", 100)
+    if outcome < 30:
+        return ("policy_text",
+                "{} returns policy: all sales are final. No refunds or exchanges.".format(case.merchant_name),
+                "Final sale, no refunds")
+    window = (14, 30, 60)[_roll(tx, "window", 3)]
+    return ("policy_text",
+            "{} returns policy: items may be returned within {} days of delivery for a "
+            "full refund.".format(case.merchant_name, window),
+            "{}-day return window, refunds allowed".format(window))
+
+
+def _synth_crm(case) -> _Fixture:
+    tx = case.transaction_id
+    outcome = _roll(tx, "crm", 100)
+    if outcome < 30:
+        return None
+    if outcome < 50:
+        return ("email",
+                "Merchant CRM ticket: our records show the order was fulfilled as described "
+                "and dispatched to the address supplied at checkout.",
+                "1 merchant reply on file, disputing the claim")
+    if outcome < 68:
+        return ("email",
+                "Merchant CRM ticket: we acknowledge the item was defective and will arrange "
+                "a resolution for {}.".format(_surname(case.card_member_name)),
+                "1 merchant reply on file, acknowledging a defect")
+    if outcome < 80:
+        return ("chat_log",
+                "Merchant CRM chat: we're sorry for the inconvenience, we'll look into this "
+                "and come back to you.",
+                "1 merchant chat on file, no position taken")
+    return ("email",
+            "Merchant CRM ticket: this charge was refunded in full on our side; please allow "
+            "a few days for it to appear.",
+            "1 merchant reply on file, refund claimed")
+
+
+_SYNTHESISERS = {
+    "carrier_api": _synth_carrier,
+    "processor_ledger": _synth_ledger,
+    "merchant_policy_api": _synth_policy,
+    "merchant_crm": _synth_crm,
+}
+
+
+def _fixture_for(case, source: str) -> _Fixture:
+    """Hand-written fixture when one exists, otherwise a deterministic synthetic one.
+    Explicit `None` in _FIXTURES is a modelled miss and is honoured as such."""
+    hand = _FIXTURES.get(case.transaction_id)
+    if hand is not None and source in hand:
+        return hand[source]
+    synth = _SYNTHESISERS.get(source)
+    return synth(case) if synth else None
+
+
 def gather(case) -> List[ConnectorResult]:
     """Query every routed source for this case. Never sleeps, never raises, never
-    scores. A transaction with no fixture misses on every source, which is the right
-    answer for a case filed during the demo: the systems genuinely hold nothing on it.
+    scores. Sources with no hand-written fixture fall back to deterministic synthesis,
+    so a dispute filed live during a demo gathers real evidence rather than nothing.
     """
-    fixtures = _FIXTURES.get(case.transaction_id, {})
     results: List[ConnectorResult] = []
 
     for source in applicable_sources(case.claim_type):
         latency = _latency_ms(source, case.transaction_id)
-        fixture = fixtures.get(source)
+        fixture = _fixture_for(case, source)
         if fixture is None:
             results.append(ConnectorResult(
                 source=source,

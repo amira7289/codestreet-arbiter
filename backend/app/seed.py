@@ -116,6 +116,95 @@ CASES = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Portfolio depth.
+#
+# The fifteen cases above are hand-written because each one demonstrates a specific
+# behaviour and carries a hand-authored connector fixture. These are different: they
+# exist so the dashboard shows a book of business rather than a sample, and their
+# evidence comes from the connectors' deterministic synthesis. Generated from fixed
+# pools so a reseed always produces the same portfolio.
+# ---------------------------------------------------------------------------
+
+_NAMES = [
+    "Amara Osei", "Ben Halloran", "Carmen Ruiz", "Devin Park", "Elena Fischer",
+    "Farid Haddad", "Grace Whitfield", "Hugo Almeida", "Ines Moreau", "Jonah Reed",
+    "Keiko Tanaka", "Liam Doherty", "Maya Ellison", "Noor Rahman", "Oscar Lindqvist",
+    "Petra Novak", "Quentin Blake", "Rosa Delgado", "Samir Chowdhury", "Tessa Bright",
+    "Ugo Bianchi", "Vera Sokolova", "Wesley Grant", "Xiomara Cruz", "Yusuf Demir",
+    "Zara Mensah", "Adam Kowalski", "Bianca Ferraro", "Caleb Nwosu", "Delphine Roy",
+]
+
+_STREETS = [
+    "12 Ashgrove Lane, Kingsbury", "7 Bramble Court, Westhaven", "154 Canal Street, Portmead",
+    "39 Dovecote Road, Ashfield", "6 Elmwood Rise, Northbrook", "221 Fenwick Avenue, Stonegate",
+    "18 Garland Way, Millbrook", "94 Harrow Close, Eastvale", "3 Ivybridge Terrace, Larkfield",
+    "67 Juniper Drive, Redhill", "25 Kestrel Place, Wyndham", "110 Linden Grove, Fairwater",
+    "8 Maplehurst Road, Colton", "47 Newbury Street, Havenport", "132 Orchard Row, Selby",
+]
+
+_MERCHANTS = [
+    "NorthPeak Outfitters", "Lumen Home", "Verdant Grocers", "Circuit & Co",
+    "Atlas Luggage", "Petal & Stem", "Ironwood Tools", "Bluewater Swim",
+    "Copper Kitchen", "Drift Audio", "Everline Apparel", "Foundry Ceramics",
+]
+
+_CLAIM_TEXT = {
+    "item_not_received": [
+        "Order never turned up and the tracking has not moved in weeks.",
+        "Marked as delivered but nothing arrived at my address.",
+        "Paid for this a month ago and it has still not shipped.",
+    ],
+    "not_as_described": [
+        "What arrived is not the item shown on the listing.",
+        "Item arrived damaged and unusable.",
+        "The size and material are nothing like the description.",
+    ],
+    "duplicate_charge": [
+        "I placed one order and was billed twice for it.",
+        "Two identical charges on the same day for a single purchase.",
+    ],
+    "refund_not_processed": [
+        "Returned the item weeks ago and no refund has appeared.",
+        "The merchant agreed to refund me and then never did.",
+        "Cancelled before dispatch but was still charged.",
+    ],
+}
+
+_CLAIM_CYCLE = [
+    "item_not_received", "not_as_described", "refund_not_processed",
+    "duplicate_charge", "item_not_received", "refund_not_processed",
+]
+
+
+def _generated_cases(count=30, start=2001):
+    """Deterministic portfolio filler. No connector fixtures: `run_gather` falls
+    through to synthesis, which is keyed off the transaction id and so is stable."""
+    out = []
+    for i in range(count):
+        claim = _CLAIM_CYCLE[i % len(_CLAIM_CYCLE)]
+        texts = _CLAIM_TEXT[claim]
+        amount = round(28 + (i * 137) % 940 + (i % 4) * 0.5, 2)
+        # A spread of outcomes so the pipeline chart is not all one bar.
+        resolve = i % 5 != 3
+        out.append(dict(
+            transaction_id="TX{}".format(start + i),
+            card_member_name=_NAMES[i % len(_NAMES)],
+            card_member_address=_STREETS[i % len(_STREETS)],
+            merchant_name=_MERCHANTS[i % len(_MERCHANTS)],
+            amount=amount,
+            claim_type=claim,
+            claim_text=texts[i % len(texts)],
+            evidence=[],
+            auto_gather=True,
+            resolve=resolve,
+        ))
+    return out
+
+
+CASES = CASES + _generated_cases()
+
+
 def seed():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()

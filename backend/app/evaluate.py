@@ -92,6 +92,10 @@ def replay(golden: dict) -> ReplayResult:
     """Parse every piece of evidence and score the case, exactly as the API does."""
     start = time.perf_counter()
 
+    # A case with no pinned filing date is treated as filed today. Cases whose
+    # outcome depends on a return window carry `filed_on`, or they would age against
+    # the wall clock and quietly change answer between runs.
+    filed_on = golden.get("filed_on")
     case = _Case(
         transaction_id=golden["transaction_id"],
         card_member_name=golden["card_member_name"],
@@ -100,6 +104,8 @@ def replay(golden: dict) -> ReplayResult:
         amount=golden["amount"],
         claim_type=golden["claim_type"],
         claim_text=golden["claim_text"],
+        created_at=(datetime.strptime(filed_on, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                    if filed_on else datetime.now(timezone.utc)),
     )
     evidence = [
         _Evidence(

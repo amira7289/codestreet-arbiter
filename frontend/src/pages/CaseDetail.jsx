@@ -17,37 +17,82 @@ const RESOLVED_POLL_MS = 5000;
 
 const OTHER_PARTY = { card_member: "merchant", merchant: "card_member" };
 
-function EvidenceItem({ item, viewer }) {
+function EvidenceItem({ item, viewer, signals }) {
   const own = item.submitted_by === viewer;
+  // Which scorecard signals this specific document produced. Shown because the
+  // question a losing party actually has is "what did my evidence count for", and
+  // the answer is otherwise buried in a combined list at the bottom of the page.
+  const produced = (signals ?? []).filter((s) => (s.evidence_ids ?? []).includes(item.id));
 
   return (
     <li className="card" style={{ padding: 12, fontSize: "0.8125rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: "0.72rem", marginBottom: 4 }}>
-        <span style={{ color: "#6b7280" }}>{item.evidence_type.replace(/_/g, " ")}</span>
-        <span
-          style={{
-            color: own ? PARTY_COLOR[viewer] : "#6b7280",
-            fontWeight: own ? 700 : 600,
-            whiteSpace: "nowrap",
-          }}
-        >
+      <div className="row row--between" style={{ fontSize: "0.72rem", marginBottom: 6, gap: 8 }}>
+        <span className="section-label">{titleCase(item.evidence_type)}</span>
+        <span style={{
+          color: own ? PARTY_COLOR[viewer] : "var(--ink-3)",
+          fontWeight: own ? 700 : 600,
+          whiteSpace: "nowrap",
+        }}>
           {own ? "Your submission" : `Filed by the ${PARTY_LABEL[item.submitted_by].toLowerCase()}`}
         </span>
       </div>
 
       {item.auto_gathered && (
-        <div style={{ fontSize: "0.72rem", color: "#15803d", marginBottom: 4 }}>
-          Auto-gathered from {item.source.replace(/_/g, " ")}
+        <div style={{ fontSize: "0.72rem", color: "var(--good)", marginBottom: 6 }}>
+          Auto-gathered from {titleCase(item.source)}
         </div>
       )}
 
-      <div>{item.raw_content}</div>
-
-      {item.parsed_facts && (
-        <pre style={{ background: "#f9fafb", padding: 6, borderRadius: 6, marginTop: 6, fontSize: "0.72rem", overflowX: "auto" }}>
-          {JSON.stringify(item.parsed_facts, null, 2)}
-        </pre>
+      {/* Plain English first. The typed extraction is what the scorer reads, but a
+          card member should not have to parse JSON to see what was found. */}
+      {item.readable_facts?.length > 0 ? (
+        <ul className="stack stack--sm" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          {item.readable_facts.map((line, i) => (
+            <li key={i} className="row" style={{ gap: 8, alignItems: "flex-start" }}>
+              <span aria-hidden="true" style={{
+                width: 5, height: 5, borderRadius: "50%", background: "var(--ink-3)",
+                marginTop: 7, flex: "none",
+              }} />
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="muted">No facts could be read from this document.</div>
       )}
+
+      {produced.length > 0 && (
+        <div className="stack stack--sm" style={{ marginTop: 10 }}>
+          {produced.map((s) => (
+            <div key={s.id} className="row" style={{
+              gap: 8, fontSize: "0.75rem",
+              borderLeft: `3px solid ${s.favors ? PARTY_COLOR[s.favors] : "var(--ink-3)"}`,
+              paddingLeft: 8,
+            }}>
+              <span className="muted">Counted as</span>
+              <strong>{titleCase(s.signal_name)}</strong>
+              <span className="num" style={{ color: s.favors ? PARTY_COLOR[s.favors] : "var(--ink-2)" }}>
+                +{s.weight} {s.favors ? PARTY_LABEL[s.favors] : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <details style={{ marginTop: 10 }}>
+        <summary className="muted" style={{ cursor: "pointer", fontSize: "0.75rem" }}>
+          Source document and extracted data
+        </summary>
+        <p className="dim" style={{ marginTop: 8 }}>{item.raw_content}</p>
+        {item.parsed_facts && (
+          <pre style={{
+            background: "var(--surface-sunken)", padding: 8, borderRadius: 6,
+            marginTop: 8, fontSize: "0.72rem", overflowX: "auto",
+          }}>
+            {JSON.stringify(item.parsed_facts, null, 2)}
+          </pre>
+        )}
+      </details>
     </li>
   );
 }
@@ -57,6 +102,7 @@ function EvidenceItem({ item, viewer }) {
  *  toggle this replaces changed only a heading, so neither side could ever see what
  *  they were actually up against. */
 function PartyPanel({ party, caseData, onSubmit }) {
+  const signals = caseData.signals ?? [];
   const counterparty = OTHER_PARTY[party];
   const own = caseData.evidence.filter((e) => e.submitted_by === party);
   const theirs = caseData.evidence.filter((e) => e.submitted_by === counterparty);
@@ -77,7 +123,7 @@ function PartyPanel({ party, caseData, onSubmit }) {
       </div>
       <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0", display: "grid", gap: 8 }}>
         {own.map((e) => (
-          <EvidenceItem key={e.id} item={e} viewer={party} />
+          <EvidenceItem key={e.id} item={e} viewer={party} signals={signals} />
         ))}
       </ul>
       {own.length === 0 && (
@@ -89,7 +135,7 @@ function PartyPanel({ party, caseData, onSubmit }) {
       </div>
       <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0", display: "grid", gap: 8 }}>
         {theirs.map((e) => (
-          <EvidenceItem key={e.id} item={e} viewer={party} />
+          <EvidenceItem key={e.id} item={e} viewer={party} signals={signals} />
         ))}
       </ul>
       {theirs.length === 0 && (
