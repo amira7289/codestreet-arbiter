@@ -118,6 +118,17 @@ class CaseOut(BaseModel):
         from_attributes = True
 
 
+class VerdictSummaryOut(BaseModel):
+    """Just enough of a verdict for a queue row. The full VerdictOut carries the
+    explanation and counterfactual, which no list view needs."""
+    winner: Party
+    confidence: float
+    reason_code: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 class CaseSummaryOut(BaseModel):
     id: int
     transaction_id: str
@@ -126,6 +137,7 @@ class CaseSummaryOut(BaseModel):
     amount: float
     claim_type: ClaimType
     status: CaseStatus
+    verdict: Optional[VerdictSummaryOut] = None
     created_at: datetime
 
     class Config:

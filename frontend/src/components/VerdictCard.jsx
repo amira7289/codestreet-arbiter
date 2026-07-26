@@ -1,5 +1,5 @@
-const PARTY_COLOR = { card_member: "#1d4ed8", merchant: "#b45309" };
-const PARTY_LABEL = { card_member: "Card Member", merchant: "Merchant" };
+
+import { PARTY as PARTY_COLOR, PARTY_LABEL } from "../theme";
 
 // Below this the margin is too thin relative to the evidence behind it for the
 // scorecard to be treated as having settled anything.

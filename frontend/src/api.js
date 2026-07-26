@@ -23,4 +23,6 @@ export const api = {
   gatherEvidence: (caseId) => request(`/cases/${caseId}/gather?async_mode=true`, { method: "POST" }),
   getGatherLog: (caseId) => request(`/cases/${caseId}/gather-log`),
   resolveCase: (caseId) => request(`/cases/${caseId}/resolve`, { method: "POST" }),
+  // Pipeline health, recomputed server-side off the labelled corpus on each call.
+  getMetrics: () => request("/metrics"),
 };

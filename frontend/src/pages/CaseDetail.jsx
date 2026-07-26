@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api";
 import StatusBadge from "../components/StatusBadge";
+import { PARTY as PARTY_COLOR, PARTY_LABEL, money, titleCase } from "../theme";
 import VerdictCard from "../components/VerdictCard";
 import EvidenceForm from "../components/EvidenceForm";
 import GatherTimeline from "../components/GatherTimeline";
@@ -13,15 +14,13 @@ const POLL_MS = 1500;
 // ruling — but not fast enough to justify the same cadence.
 const RESOLVED_POLL_MS = 5000;
 
-const PARTY_COLOR = { card_member: "#1d4ed8", merchant: "#b45309" };
-const PARTY_LABEL = { card_member: "Card Member", merchant: "Merchant" };
 const OTHER_PARTY = { card_member: "merchant", merchant: "card_member" };
 
 function EvidenceItem({ item, viewer }) {
   const own = item.submitted_by === viewer;
 
   return (
-    <li style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: 10, fontSize: "0.85rem", background: "white" }}>
+    <li className="card" style={{ padding: 12, fontSize: "0.8125rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: "0.72rem", marginBottom: 4 }}>
         <span style={{ color: "#6b7280" }}>{item.evidence_type.replace(/_/g, " ")}</span>
         <span
@@ -64,13 +63,8 @@ function PartyPanel({ party, caseData, onSubmit }) {
 
   return (
     <section
-      style={{
-        border: `1px solid ${PARTY_COLOR[party]}40`,
-        borderTop: `3px solid ${PARTY_COLOR[party]}`,
-        borderRadius: 10,
-        padding: 14,
-        background: "#fcfcfd",
-      }}
+      className="card"
+      style={{ borderTop: `3px solid ${PARTY_COLOR[party]}`, padding: 16, background: "var(--surface-sunken)" }}
     >
       <div style={{ marginBottom: 12 }}>
         <div style={{ fontWeight: 700, color: PARTY_COLOR[party] }}>{PARTY_LABEL[party]}</div>
@@ -191,7 +185,7 @@ export default function CaseDetail() {
         </div>
       );
     }
-    return <p>Loading case...</p>;
+    return <p className="muted">Loading case…</p>;
   }
 
   async function handleEvidenceSubmit(payload) {
@@ -243,36 +237,52 @@ export default function CaseDetail() {
     : 0;
 
   return (
-    <div>
-      <Link to="/">&larr; All cases</Link>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-        <h1 style={{ margin: 0 }}>{caseData.transaction_id}</h1>
-        <StatusBadge status={caseData.status} />
+    <div className="stack stack--lg">
+      <div>
+        <Link to="/cases" className="page__eyebrow" style={{ display: "inline-block", marginBottom: 6 }}>
+          &larr; Case queue
+        </Link>
+        <div className="row row--between">
+          <div className="row" style={{ gap: 12 }}>
+            <h1 className="mono">{caseData.transaction_id}</h1>
+            <StatusBadge status={caseData.status} />
+          </div>
+          <div className="row" style={{ gap: 6 }}>
+            <span className="section-label">Disputed</span>
+            <span className="num" style={{ fontSize: "1.25rem", fontWeight: 650 }}>
+              {money(caseData.amount)}
+            </span>
+          </div>
+        </div>
+        <p className="dim" style={{ marginTop: 4 }}>
+          {caseData.card_member_name} <span className="muted">vs</span> {caseData.merchant_name}
+          <span className="muted"> · </span>{titleCase(caseData.claim_type)}
+        </p>
+        <blockquote className="notice notice--quiet" style={{ marginTop: 12, fontStyle: "italic" }}>
+          &ldquo;{caseData.claim_text}&rdquo;
+        </blockquote>
       </div>
-      <p style={{ color: "#6b7280" }}>
-        {caseData.card_member_name} vs {caseData.merchant_name} &middot; ${caseData.amount.toFixed(2)} &middot;{" "}
-        {caseData.claim_type.replace(/_/g, " ")}
-      </p>
-      <p style={{ fontStyle: "italic" }}>&ldquo;{caseData.claim_text}&rdquo;</p>
 
-      <div style={{ display: "flex", gap: 8, alignItems: "center", margin: "16px 0" }}>
-        <button onClick={handleGather} disabled={queueing || pendingSources > 0}>
-          {queueing || pendingSources > 0 ? "Gathering evidence..." : "Auto-gather evidence"}
+      <div className="toolbar">
+        <button className="btn btn--primary" onClick={handleGather} disabled={queueing || pendingSources > 0}>
+          {queueing || pendingSources > 0 ? "Gathering evidence…" : "Auto-gather evidence"}
         </button>
         {caseData.status !== "resolved" && (
-          <button onClick={handleResolve} disabled={resolving}>
-            {resolving ? "Resolving..." : "Resolve Case"}
+          <button className="btn" onClick={handleResolve} disabled={resolving}>
+            {resolving ? "Resolving…" : "Resolve case"}
           </button>
         )}
+        <span className="spacer" />
         {/* Shown on resolved cases too: they are polled more slowly, but they ARE
             polled, and a live indicator that disappears reads as "stopped updating". */}
         {stale ? (
-          <span style={{ fontSize: "0.75rem", color: "#b91c1c", fontWeight: 600 }}>
-            Disconnected &middot; showing last known state ({stale})
+          <span className="live live--off">
+            <span className="live__dot" />Disconnected · showing last known state
           </span>
         ) : (
-          <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-            Live &middot; refreshing every {caseData.status === "resolved" ? "5s" : "1.5s"}
+          <span className="live">
+            <span className="live__dot" />Live · refreshing every{" "}
+            {caseData.status === "resolved" ? "5s" : "1.5s"}
           </span>
         )}
       </div>
