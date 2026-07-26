@@ -68,8 +68,10 @@ export const CLAIM_COLOR = {
 export const STATUS_STYLE = {
   filed: { fg: STATUS.neutral, bg: STATUS.neutralTint, label: "Filed" },
   evidence_gathering: { fg: STATUS.warning, bg: STATUS.warningTint, label: "Gathering Evidence" },
+  negotiating: { fg: BRAND.blueDeep, bg: BRAND.blueTint, label: "Negotiating" },
   scored: { fg: BRAND.blue, bg: BRAND.blueTint, label: "Scored" },
-  resolved: { fg: STATUS.good, bg: STATUS.goodTint, label: "Resolved" },
+  settled: { fg: STATUS.good, bg: STATUS.goodTint, label: "Settled" },
+  resolved: { fg: BRAND.blue, bg: BRAND.blueTint, label: "Adjudicated" },
 };
 
 export const titleCase = (s) =>

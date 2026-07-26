@@ -6,6 +6,7 @@ import { PARTY as PARTY_COLOR, PARTY_LABEL, money, titleCase } from "../theme";
 import VerdictCard from "../components/VerdictCard";
 import EvidenceForm from "../components/EvidenceForm";
 import GatherTimeline from "../components/GatherTimeline";
+import Negotiation from "../components/Negotiation";
 
 // Fast enough to read as live on a video, slow enough that a background gather run
 // gets to commit between polls.
@@ -111,6 +112,8 @@ export default function CaseDetail() {
   const [withdrawn, setWithdrawn] = useState(false);
   const [queueing, setQueueing] = useState(false);
   const [stale, setStale] = useState(null);
+  const [forecast, setForecast] = useState(null);
+  const [negotiating, setNegotiating] = useState(false);
   const [error, setError] = useState(null);
   const gatherInFlight = useRef(false);
 
@@ -136,6 +139,13 @@ export default function CaseDetail() {
         setCaseData(next);
         setError(null);
         setStale(null);
+        // The forecast is what makes the negotiation informed, so it tracks the
+        // evidence set rather than being fetched once on mount.
+        if (next.status !== "settled") {
+          api.getForecast(id).then(setForecast).catch(() => setForecast(null));
+        } else {
+          setForecast(null);
+        }
         return next;
       })
       .finally(() => {
@@ -219,6 +229,29 @@ export default function CaseDetail() {
     }
   }
 
+  async function handleOffer(payload) {
+    setNegotiating(true);
+    try {
+      await api.proposeOffer(id, payload);
+      await reload();
+    } finally {
+      setNegotiating(false);
+    }
+  }
+
+  async function handleRespond(offerId, action) {
+    setNegotiating(true);
+    setError(null);
+    try {
+      await api.respondToOffer(id, offerId, action);
+      await reload();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setNegotiating(false);
+    }
+  }
+
   async function handleResolve() {
     setResolving(true);
     setError(null);
@@ -267,7 +300,7 @@ export default function CaseDetail() {
         <button className="btn btn--primary" onClick={handleGather} disabled={queueing || pendingSources > 0}>
           {queueing || pendingSources > 0 ? "Gathering evidence…" : "Auto-gather evidence"}
         </button>
-        {caseData.status !== "resolved" && (
+        {caseData.status !== "resolved" && caseData.status !== "settled" && (
           <button className="btn" onClick={handleResolve} disabled={resolving}>
             {resolving ? "Resolving…" : "Resolve case"}
           </button>
@@ -308,6 +341,14 @@ export default function CaseDetail() {
       {error && <p style={{ color: "#b91c1c" }}>{error}</p>}
 
       <GatherTimeline entries={caseData.gather_log} pending={pendingSources} run={gatherRun} />
+
+      <Negotiation
+        caseData={caseData}
+        forecast={forecast}
+        onOffer={handleOffer}
+        onRespond={handleRespond}
+        busy={negotiating}
+      />
 
       <div className="split-view" style={{ marginTop: 16 }}>
         <PartyPanel party="card_member" caseData={caseData} onSubmit={handleEvidenceSubmit} />

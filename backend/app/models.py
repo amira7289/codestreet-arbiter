@@ -10,8 +10,12 @@ from .database import Base
 class CaseStatus(str, enum.Enum):
     filed = "filed"
     evidence_gathering = "evidence_gathering"
+    negotiating = "negotiating"
     scored = "scored"
     resolved = "resolved"
+    # Agreed between the parties. Distinct from `resolved`, which means the scorecard
+    # adjudicated: a settled case has no verdict and never needed one.
+    settled = "settled"
 
 
 class ClaimType(str, enum.Enum):
@@ -24,6 +28,22 @@ class ClaimType(str, enum.Enum):
 class Party(str, enum.Enum):
     card_member = "card_member"
     merchant = "merchant"
+
+
+class OfferType(str, enum.Enum):
+    full_refund = "full_refund"
+    partial_refund = "partial_refund"
+    replacement = "replacement"
+    withdraw_dispute = "withdraw_dispute"
+
+
+class OfferStatus(str, enum.Enum):
+    open = "open"
+    accepted = "accepted"
+    declined = "declined"
+    # Replaced by a later offer from either side. Kept rather than deleted so the
+    # negotiation reads as a thread both parties can audit afterwards.
+    superseded = "superseded"
 
 
 class EvidenceType(str, enum.Enum):
@@ -54,6 +74,8 @@ class DisputeCase(Base):
     signals = relationship("ScoreSignal", back_populates="case", cascade="all, delete-orphan")
     verdict = relationship("Verdict", back_populates="case", uselist=False, cascade="all, delete-orphan")
     gather_log = relationship("GatherLog", back_populates="case", cascade="all, delete-orphan")
+    offers = relationship("SettlementOffer", back_populates="case", cascade="all, delete-orphan",
+                          order_by="SettlementOffer.id")
 
 
 class Evidence(Base):
@@ -129,3 +151,27 @@ class Verdict(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     case = relationship("DisputeCase", back_populates="verdict")
+
+
+class SettlementOffer(Base):
+    """One move in a negotiation.
+
+    Adjudication is the fallback, not the first step. Most disputes have a number both
+    sides would accept, and finding it costs nothing compared with arbitrating — so the
+    parties get to propose terms before the scorecard is asked to rule at all.
+    """
+
+    __tablename__ = "settlement_offers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    case_id = Column(Integer, ForeignKey("dispute_cases.id"), nullable=False)
+    proposed_by = Column(Enum(Party), nullable=False)
+    offer_type = Column(Enum(OfferType), nullable=False)
+    # Only meaningful for partial_refund; the other types imply their own amount.
+    amount = Column(Float, nullable=True)
+    message = Column(Text, nullable=True)
+    status = Column(Enum(OfferStatus), default=OfferStatus.open, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    responded_at = Column(DateTime(timezone=True), nullable=True)
+
+    case = relationship("DisputeCase", back_populates="offers")

@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from .. import connectors, llm, models, reason_codes, schemas
 from ..database import SessionLocal, get_db
 from ..scoring import counterfactual_statement, score_case
+from sqlalchemy import func as sqlfunc
 
 router = APIRouter(prefix="/cases", tags=["cases"])
 
@@ -258,6 +259,8 @@ def resolve_case(case_id: int, db: Session = Depends(get_db)):
     case = db.get(models.DisputeCase, case_id)
     if not case:
         raise HTTPException(404, "Case not found")
+    if case.status == models.CaseStatus.settled:
+        raise HTTPException(409, "This case was settled by agreement and needs no ruling")
 
     signals, winner, card_member_score, merchant_score, confidence = score_case(case, case.evidence)
 
@@ -295,3 +298,133 @@ def resolve_case(case_id: int, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(verdict)
     return verdict
+
+
+# ---------------------------------------------------------------------------
+# Negotiation
+#
+# Adjudication is the fallback, not the first move. A settlement both parties
+# accept resolves the dispute outright — no verdict, nothing to explain, nobody
+# to convince — so the scorecard is only asked to rule when they cannot agree.
+# ---------------------------------------------------------------------------
+
+SETTLED_OR_RULED = (models.CaseStatus.settled,)
+
+
+def _counterparty(party) -> models.Party:
+    value = getattr(party, "value", party)
+    return models.Party.card_member if value == "merchant" else models.Party.merchant
+
+
+def _open_offer(db: Session, case_id: int):
+    return (db.query(models.SettlementOffer)
+              .filter(models.SettlementOffer.case_id == case_id,
+                      models.SettlementOffer.status == models.OfferStatus.open)
+              .order_by(models.SettlementOffer.id.desc())
+              .first())
+
+
+def _settled_terms(offer) -> str:
+    kind = getattr(offer.offer_type, "value", offer.offer_type)
+    if kind == "full_refund":
+        return "Merchant refunds the full disputed amount"
+    if kind == "partial_refund":
+        return f"Merchant refunds ${offer.amount:,.2f} of the disputed amount"
+    if kind == "replacement":
+        return "Merchant ships a replacement"
+    return "Card member withdraws the dispute"
+
+
+@router.post("/{case_id}/offers", response_model=schemas.OfferOut, status_code=201)
+def create_offer(case_id: int, payload: schemas.OfferCreate, db: Session = Depends(get_db)):
+    case = db.get(models.DisputeCase, case_id)
+    if not case:
+        raise HTTPException(404, "Case not found")
+    if case.status in SETTLED_OR_RULED:
+        raise HTTPException(409, "This case is already settled")
+
+    kind = payload.offer_type.value
+    if kind == "partial_refund" and payload.amount is None:
+        raise HTTPException(422, "A partial refund must state an amount")
+    if kind != "partial_refund" and payload.amount is not None:
+        raise HTTPException(422, f"An amount is not meaningful for a {kind.replace('_', ' ')} offer")
+    if payload.amount is not None and payload.amount > case.amount:
+        raise HTTPException(422, "A settlement cannot exceed the disputed amount")
+
+    # One live offer at a time. A counter is just the next offer, and it retires the
+    # one it answers — kept as `superseded` so the thread stays readable.
+    live = _open_offer(db, case_id)
+    if live:
+        if live.proposed_by == payload.proposed_by:
+            raise HTTPException(409, "Your previous offer is still awaiting a response")
+        live.status = models.OfferStatus.superseded
+        live.responded_at = sqlfunc.now()
+
+    offer = models.SettlementOffer(
+        case_id=case_id,
+        proposed_by=payload.proposed_by,
+        offer_type=payload.offer_type,
+        amount=payload.amount,
+        message=payload.message,
+    )
+    db.add(offer)
+    if case.status in (models.CaseStatus.filed, models.CaseStatus.evidence_gathering):
+        case.status = models.CaseStatus.negotiating
+    db.commit()
+    db.refresh(offer)
+    return offer
+
+
+@router.post("/{case_id}/offers/{offer_id}/respond", response_model=schemas.OfferOut)
+def respond_to_offer(case_id: int, offer_id: int, payload: schemas.OfferRespond,
+                     db: Session = Depends(get_db)):
+    offer = db.get(models.SettlementOffer, offer_id)
+    if not offer or offer.case_id != case_id:
+        raise HTTPException(404, "Offer not found on this case")
+    if offer.status != models.OfferStatus.open:
+        raise HTTPException(409, f"That offer is already {offer.status.value}")
+
+    case = db.get(models.DisputeCase, case_id)
+    offer.responded_at = sqlfunc.now()
+
+    if payload.action == "accept":
+        offer.status = models.OfferStatus.accepted
+        # An agreed settlement supersedes any standing ruling: the parties have
+        # decided the matter themselves, and a verdict alongside it would be a second,
+        # contradictory answer to a question that is no longer open.
+        _withdraw_verdict(db, case_id)
+        case.status = models.CaseStatus.settled
+    else:
+        offer.status = models.OfferStatus.declined
+        case.status = models.CaseStatus.negotiating
+
+    db.commit()
+    db.refresh(offer)
+    return offer
+
+
+@router.get("/{case_id}/forecast", response_model=schemas.ForecastOut)
+def forecast(case_id: int, db: Session = Depends(get_db)):
+    """What the scorecard would rule on the current evidence, computed and discarded.
+
+    Both parties see the identical forecast. That is the point: a negotiation where
+    only one side can estimate the outcome is not a negotiation, and an issuer that
+    knows the answer while the parties guess is not a neutral one.
+    """
+    case = db.get(models.DisputeCase, case_id)
+    if not case:
+        raise HTTPException(404, "Case not found")
+
+    signals, winner, cm, m, confidence = score_case(case, case.evidence)
+    return schemas.ForecastOut(
+        winner=winner,
+        card_member_score=cm,
+        merchant_score=m,
+        confidence=confidence,
+        counterfactual=counterfactual_statement(signals, winner, cm, m),
+        signals=[
+            schemas.SignalPreviewOut(
+                signal_name=s.signal_name, detail=s.detail, weight=s.weight, favors=s.favors)
+            for s in signals
+        ],
+    )

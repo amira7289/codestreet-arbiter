@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from .models import CaseStatus, ClaimType, EvidenceType, Party
+from .models import CaseStatus, ClaimType, EvidenceType, OfferStatus, OfferType, Party
 
 
 class CaseCreate(BaseModel):
@@ -98,6 +98,55 @@ class VerdictOut(BaseModel):
         from_attributes = True
 
 
+class OfferCreate(BaseModel):
+    proposed_by: Party
+    offer_type: OfferType
+    # Required for partial_refund and rejected for every other type — the route
+    # enforces that, because "half of nothing" is not a coherent settlement.
+    amount: Optional[float] = Field(default=None, gt=0)
+    message: Optional[str] = Field(default=None, max_length=1000)
+
+
+class OfferRespond(BaseModel):
+    # The responding party is derived from the offer, not supplied: letting the caller
+    # name it would let one side accept its own proposal.
+    action: str = Field(pattern="^(accept|decline)$")
+
+
+class OfferOut(BaseModel):
+    id: int
+    proposed_by: Party
+    offer_type: OfferType
+    amount: Optional[float] = None
+    message: Optional[str] = None
+    status: OfferStatus
+    created_at: datetime
+    responded_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ForecastOut(BaseModel):
+    """What the scorecard would rule if asked right now, without recording anything.
+
+    Shown identically to both parties. A negotiation where only one side can estimate
+    the outcome is not a negotiation, it is a squeeze."""
+    winner: Party
+    card_member_score: float
+    merchant_score: float
+    confidence: float
+    counterfactual: str
+    signals: List["SignalPreviewOut"] = []
+
+
+class SignalPreviewOut(BaseModel):
+    signal_name: str
+    detail: str
+    weight: float
+    favors: Optional[Party] = None
+
+
 class CaseOut(BaseModel):
     id: int
     transaction_id: str
@@ -113,6 +162,7 @@ class CaseOut(BaseModel):
     signals: list[SignalOut] = []
     verdict: Optional[VerdictOut] = None
     gather_log: list[GatherEntryOut] = []
+    offers: list[OfferOut] = []
 
     class Config:
         from_attributes = True

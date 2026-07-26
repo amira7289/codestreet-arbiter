@@ -8,12 +8,14 @@ import {
   money, pct, titleCase,
 } from "../theme";
 
-const STAGES = ["filed", "evidence_gathering", "scored", "resolved"];
+const STAGES = ["filed", "evidence_gathering", "negotiating", "scored", "resolved", "settled"];
 const STAGE_COLOR = {
   filed: STATUS.neutral,
   evidence_gathering: STATUS.warning,
+  negotiating: BRAND.blueDeep,
   scored: BRAND.blue,
-  resolved: STATUS.good,
+  resolved: BRAND.blue,
+  settled: STATUS.good,
 };
 
 export default function Dashboard() {
@@ -41,15 +43,16 @@ export default function Dashboard() {
       byStatus[c.status] = (byStatus[c.status] ?? 0) + 1;
       byClaim[c.claim_type] = (byClaim[c.claim_type] ?? 0) + 1;
       disputedValue += c.amount;
-      if (c.status === "resolved") resolvedValue += c.amount;
+      if (c.status === "resolved" || c.status === "settled") resolvedValue += c.amount;
     }
     return {
       byStatus,
       byClaim,
       disputedValue,
       resolvedValue,
-      resolved: byStatus.resolved,
-      open: cases.length - byStatus.resolved,
+      closed: byStatus.resolved + byStatus.settled,
+      settled: byStatus.settled,
+      open: cases.length - byStatus.resolved - byStatus.settled,
     };
   }, [cases]);
 
@@ -68,6 +71,7 @@ export default function Dashboard() {
   // corpus, which is a different population — mixing the two would put a corpus ratio
   // on a portfolio chart and quietly misreport both.
   const decided = cases.filter((c) => c.verdict);
+  const settledCount = cases.filter((c) => c.status === "settled").length;
   const wonBy = (party) => decided.filter((c) => c.verdict.winner === party).length;
   const claimAccuracy = Object.entries(metrics.accuracy.per_claim_type)
     .map(([k, v]) => ({ label: titleCase(k), value: v, color: CLAIM_COLOR[k] ?? CATEGORICAL[4] }))
@@ -105,7 +109,7 @@ export default function Dashboard() {
         <StatTile
           label="Disputed value"
           value={money(derived.disputedValue)}
-          sub={`${money(derived.resolvedValue)} adjudicated`}
+          sub={`${money(derived.resolvedValue)} closed`}
           accent={BRAND.blue}
         />
         <StatTile
@@ -139,13 +143,14 @@ export default function Dashboard() {
         />
         <DonutChart
           title="Verdicts by party"
-          subtitle="Who the scorecard found for across the portfolio."
+          subtitle="Adjudicated outcomes, plus the disputes the parties closed between themselves without a ruling."
           centerValue={cases.length}
           centerLabel="Disputes"
           data={[
             { label: PARTY_LABEL.card_member, value: wonBy("card_member"), color: PARTY.card_member },
             { label: PARTY_LABEL.merchant, value: wonBy("merchant"), color: PARTY.merchant },
-            { label: "Awaiting resolution", value: cases.length - decided.length, color: "#C3CAD1" },
+            { label: "Settled by agreement", value: derived.settled, color: STATUS.good },
+            { label: "Still open", value: derived.open, color: "#C3CAD1" },
           ]}
         />
       </section>
