@@ -1,0 +1,622 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - generic [ref=f1e6]:
+        - img "Dispute Resolution" [ref=f1e7]
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: Dispute Resolution
+          - generic [ref=f1e14]: Issuer Arbitration Console
+      - navigation [ref=f1e15]:
+        - link "Dashboard" [ref=f1e16] [cursor=pointer]:
+          - /url: /
+        - link "Cases" [ref=f1e17] [cursor=pointer]:
+          - /url: /cases
+  - main [ref=f1e18]:
+    - generic [ref=f1e19]:
+      - generic [ref=f1e20]:
+        - generic [ref=f1e21]:
+          - generic [ref=f1e22]: Queue
+          - heading "Cases" [level=1] [ref=f1e23]
+          - paragraph [ref=f1e24]: 45 disputes in the portfolio. Open one to see both parties' evidence side by side and the scorecard behind its verdict.
+        - generic [ref=f1e25]:
+          - button "All" [pressed] [ref=f1e26] [cursor=pointer]
+          - button "Open" [ref=f1e27] [cursor=pointer]
+          - button "Resolved" [ref=f1e28] [cursor=pointer]
+          - searchbox "Search cases" [ref=f1e30]
+      - table [ref=f1e33]:
+        - rowgroup [ref=f1e34]:
+          - row [ref=f1e35]:
+            - columnheader "Transaction" [ref=f1e36]
+            - columnheader "Card member" [ref=f1e37]
+            - columnheader "Merchant" [ref=f1e38]
+            - columnheader "Claim type" [ref=f1e39]
+            - columnheader "Amount" [ref=f1e40]
+            - columnheader "Status" [ref=f1e41]
+            - columnheader "Outcome" [ref=f1e42]
+        - rowgroup [ref=f1e43]:
+          - row [ref=f1e44]:
+            - cell [ref=f1e45]:
+              - link "TX2030" [ref=f1e46] [cursor=pointer]:
+                - /url: /cases/45
+            - cell "Delphine Roy" [ref=f1e47]
+            - cell "Petal & Stem" [ref=f1e48]
+            - cell "Refund Not Processed" [ref=f1e49]
+            - cell "$241.50" [ref=f1e50]
+            - cell [ref=f1e51]
+            - cell "Pending" [ref=f1e54]
+          - row [ref=f1e55]:
+            - cell [ref=f1e56]:
+              - link "TX2029" [ref=f1e57] [cursor=pointer]:
+                - /url: /cases/44
+            - cell "Caleb Nwosu" [ref=f1e58]
+            - cell "Atlas Luggage" [ref=f1e59]
+            - cell "Item Not Received" [ref=f1e60]
+            - cell "$104.00" [ref=f1e61]
+            - cell [ref=f1e62]
+            - cell "Pending" [ref=f1e65]
+          - row [ref=f1e66]:
+            - cell [ref=f1e67]:
+              - link "TX2028" [ref=f1e68] [cursor=pointer]:
+                - /url: /cases/43
+            - cell "Bianca Ferraro" [ref=f1e69]
+            - cell "Circuit & Co" [ref=f1e70]
+            - cell "Duplicate Charge" [ref=f1e71]
+            - cell "$908.50" [ref=f1e72]
+            - cell [ref=f1e73]
+            - cell "Merchant 29%" [ref=f1e76]:
+              - generic [ref=f1e77]:
+                - generic [ref=f1e78]: Merchant
+                - generic "29%" [ref=f1e80]
+                - generic [ref=f1e82]: 29%
+          - row [ref=f1e83]:
+            - cell [ref=f1e84]:
+              - link "TX2027" [ref=f1e85] [cursor=pointer]:
+                - /url: /cases/42
+            - cell "Adam Kowalski" [ref=f1e86]
+            - cell "Verdant Grocers" [ref=f1e87]
+            - cell "Refund Not Processed" [ref=f1e88]
+            - cell "$771.00" [ref=f1e89]
+            - cell [ref=f1e90]
+            - cell "Merchant 29%" [ref=f1e93]:
+              - generic [ref=f1e94]:
+                - generic [ref=f1e95]: Merchant
+                - generic "29%" [ref=f1e97]
+                - generic [ref=f1e99]: 29%
+          - row [ref=f1e100]:
+            - cell [ref=f1e101]:
+              - link "TX2026" [ref=f1e102] [cursor=pointer]:
+                - /url: /cases/41
+            - cell "Zara Mensah" [ref=f1e103]
+            - cell "Lumen Home" [ref=f1e104]
+            - cell "Not As Described" [ref=f1e105]
+            - cell "$633.50" [ref=f1e106]
+            - cell [ref=f1e107]
+            - cell "Merchant 26%" [ref=f1e110]:
+              - generic [ref=f1e111]:
+                - generic [ref=f1e112]: Merchant
+                - generic "26%" [ref=f1e114]
+                - generic [ref=f1e116]: 26%
+          - row [ref=f1e117]:
+            - cell [ref=f1e118]:
+              - link "TX2025" [ref=f1e119] [cursor=pointer]:
+                - /url: /cases/40
+            - cell "Yusuf Demir" [ref=f1e120]
+            - cell "NorthPeak Outfitters" [ref=f1e121]
+            - cell "Item Not Received" [ref=f1e122]
+            - cell "$496.00" [ref=f1e123]
+            - cell [ref=f1e124]
+            - cell "Card Member 71%" [ref=f1e127]:
+              - generic [ref=f1e128]:
+                - generic [ref=f1e129]: Card Member
+                - generic "71%" [ref=f1e131]
+                - generic [ref=f1e133]: 71%
+          - row [ref=f1e134]:
+            - cell [ref=f1e135]:
+              - link "TX2024" [ref=f1e136] [cursor=pointer]:
+                - /url: /cases/39
+            - cell "Xiomara Cruz" [ref=f1e137]
+            - cell "Foundry Ceramics" [ref=f1e138]
+            - cell "Refund Not Processed" [ref=f1e139]
+            - cell "$360.50" [ref=f1e140]
+            - cell [ref=f1e141]
+            - cell "Pending" [ref=f1e144]
+          - row [ref=f1e145]:
+            - cell [ref=f1e146]:
+              - link "TX2023" [ref=f1e147] [cursor=pointer]:
+                - /url: /cases/38
+            - cell "Wesley Grant" [ref=f1e148]
+            - cell "Everline Apparel" [ref=f1e149]
+            - cell "Item Not Received" [ref=f1e150]
+            - cell "$223.00" [ref=f1e151]
+            - cell [ref=f1e152]
+            - cell "Merchant 71%" [ref=f1e155]:
+              - generic [ref=f1e156]:
+                - generic [ref=f1e157]: Merchant
+                - generic "71%" [ref=f1e159]
+                - generic [ref=f1e161]: 71%
+          - row [ref=f1e162]:
+            - cell [ref=f1e163]:
+              - link "TX2022" [ref=f1e164] [cursor=pointer]:
+                - /url: /cases/37
+            - cell "Vera Sokolova" [ref=f1e165]
+            - cell "Drift Audio" [ref=f1e166]
+            - cell "Duplicate Charge" [ref=f1e167]
+            - cell "$85.50" [ref=f1e168]
+            - cell [ref=f1e169]
+            - cell "Merchant 29%" [ref=f1e172]:
+              - generic [ref=f1e173]:
+                - generic [ref=f1e174]: Merchant
+                - generic "29%" [ref=f1e176]
+                - generic [ref=f1e178]: 29%
+          - row [ref=f1e179]:
+            - cell [ref=f1e180]:
+              - link "TX2021" [ref=f1e181] [cursor=pointer]:
+                - /url: /cases/36
+            - cell "Ugo Bianchi" [ref=f1e182]
+            - cell "Copper Kitchen" [ref=f1e183]
+            - cell "Refund Not Processed" [ref=f1e184]
+            - cell "$888.00" [ref=f1e185]
+            - cell [ref=f1e186]
+            - cell "Merchant 29%" [ref=f1e189]:
+              - generic [ref=f1e190]:
+                - generic [ref=f1e191]: Merchant
+                - generic "29%" [ref=f1e193]
+                - generic [ref=f1e195]: 29%
+          - row [ref=f1e196]:
+            - cell [ref=f1e197]:
+              - link "TX2020" [ref=f1e198] [cursor=pointer]:
+                - /url: /cases/35
+            - cell "Tessa Bright" [ref=f1e199]
+            - cell "Bluewater Swim" [ref=f1e200]
+            - cell "Not As Described" [ref=f1e201]
+            - cell "$752.50" [ref=f1e202]
+            - cell [ref=f1e203]
+            - cell "Merchant 79%" [ref=f1e206]:
+              - generic [ref=f1e207]:
+                - generic [ref=f1e208]: Merchant
+                - generic "79%" [ref=f1e210]
+                - generic [ref=f1e212]: 79%
+          - row [ref=f1e213]:
+            - cell [ref=f1e214]:
+              - link "TX2019" [ref=f1e215] [cursor=pointer]:
+                - /url: /cases/34
+            - cell "Samir Chowdhury" [ref=f1e216]
+            - cell "Ironwood Tools" [ref=f1e217]
+            - cell "Item Not Received" [ref=f1e218]
+            - cell "$615.00" [ref=f1e219]
+            - cell [ref=f1e220]
+            - cell "Pending" [ref=f1e223]
+          - row [ref=f1e224]:
+            - cell [ref=f1e225]:
+              - link "TX2018" [ref=f1e226] [cursor=pointer]:
+                - /url: /cases/33
+            - cell "Rosa Delgado" [ref=f1e227]
+            - cell "Petal & Stem" [ref=f1e228]
+            - cell "Refund Not Processed" [ref=f1e229]
+            - cell "$477.50" [ref=f1e230]
+            - cell [ref=f1e231]
+            - cell "Card Member 100%" [ref=f1e234]:
+              - generic [ref=f1e235]:
+                - generic [ref=f1e236]: Card Member
+                - generic "100%" [ref=f1e238]
+                - generic [ref=f1e240]: 100%
+          - row [ref=f1e241]:
+            - cell [ref=f1e242]:
+              - link "TX2017" [ref=f1e243] [cursor=pointer]:
+                - /url: /cases/32
+            - cell "Quentin Blake" [ref=f1e244]
+            - cell "Atlas Luggage" [ref=f1e245]
+            - cell "Item Not Received" [ref=f1e246]
+            - cell "$340.00" [ref=f1e247]
+            - cell [ref=f1e248]
+            - cell "Card Member 67%" [ref=f1e251]:
+              - generic [ref=f1e252]:
+                - generic [ref=f1e253]: Card Member
+                - generic "67%" [ref=f1e255]
+                - generic [ref=f1e257]: 67%
+          - row [ref=f1e258]:
+            - cell [ref=f1e259]:
+              - link "TX2016" [ref=f1e260] [cursor=pointer]:
+                - /url: /cases/31
+            - cell "Petra Novak" [ref=f1e261]
+            - cell "Circuit & Co" [ref=f1e262]
+            - cell "Duplicate Charge" [ref=f1e263]
+            - cell "$204.50" [ref=f1e264]
+            - cell [ref=f1e265]
+            - cell "Card Member 92%" [ref=f1e268]:
+              - generic [ref=f1e269]:
+                - generic [ref=f1e270]: Card Member
+                - generic "92%" [ref=f1e272]
+                - generic [ref=f1e274]: 92%
+          - row [ref=f1e275]:
+            - cell [ref=f1e276]:
+              - link "TX2015" [ref=f1e277] [cursor=pointer]:
+                - /url: /cases/30
+            - cell "Oscar Lindqvist" [ref=f1e278]
+            - cell "Verdant Grocers" [ref=f1e279]
+            - cell "Refund Not Processed" [ref=f1e280]
+            - cell "$67.00" [ref=f1e281]
+            - cell [ref=f1e282]
+            - cell "Card Member 83%" [ref=f1e285]:
+              - generic [ref=f1e286]:
+                - generic [ref=f1e287]: Card Member
+                - generic "83%" [ref=f1e289]
+                - generic [ref=f1e291]: 83%
+          - row [ref=f1e292]:
+            - cell [ref=f1e293]:
+              - link "TX2014" [ref=f1e294] [cursor=pointer]:
+                - /url: /cases/29
+            - cell "Noor Rahman" [ref=f1e295]
+            - cell "Lumen Home" [ref=f1e296]
+            - cell "Not As Described" [ref=f1e297]
+            - cell "$869.50" [ref=f1e298]
+            - cell [ref=f1e299]
+            - cell "Pending" [ref=f1e302]
+          - row [ref=f1e303]:
+            - cell [ref=f1e304]:
+              - link "TX2013" [ref=f1e305] [cursor=pointer]:
+                - /url: /cases/28
+            - cell "Maya Ellison" [ref=f1e306]
+            - cell "NorthPeak Outfitters" [ref=f1e307]
+            - cell "Item Not Received" [ref=f1e308]
+            - cell "$732.00" [ref=f1e309]
+            - cell [ref=f1e310]
+            - cell "Card Member 88%" [ref=f1e313]:
+              - generic [ref=f1e314]:
+                - generic [ref=f1e315]: Card Member
+                - generic "88%" [ref=f1e317]
+                - generic [ref=f1e319]: 88%
+          - row [ref=f1e320]:
+            - cell [ref=f1e321]:
+              - link "TX2012" [ref=f1e322] [cursor=pointer]:
+                - /url: /cases/27
+            - cell "Liam Doherty" [ref=f1e323]
+            - cell "Foundry Ceramics" [ref=f1e324]
+            - cell "Refund Not Processed" [ref=f1e325]
+            - cell "$596.50" [ref=f1e326]
+            - cell [ref=f1e327]
+            - cell "Card Member 100%" [ref=f1e330]:
+              - generic [ref=f1e331]:
+                - generic [ref=f1e332]: Card Member
+                - generic "100%" [ref=f1e334]
+                - generic [ref=f1e336]: 100%
+          - row [ref=f1e337]:
+            - cell [ref=f1e338]:
+              - link "TX2011" [ref=f1e339] [cursor=pointer]:
+                - /url: /cases/26
+            - cell "Keiko Tanaka" [ref=f1e340]
+            - cell "Everline Apparel" [ref=f1e341]
+            - cell "Item Not Received" [ref=f1e342]
+            - cell "$459.00" [ref=f1e343]
+            - cell [ref=f1e344]
+            - cell "Card Member 75%" [ref=f1e347]:
+              - generic [ref=f1e348]:
+                - generic [ref=f1e349]: Card Member
+                - generic "75%" [ref=f1e351]
+                - generic [ref=f1e353]: 75%
+          - row [ref=f1e354]:
+            - cell [ref=f1e355]:
+              - link "TX2010" [ref=f1e356] [cursor=pointer]:
+                - /url: /cases/25
+            - cell "Jonah Reed" [ref=f1e357]
+            - cell "Drift Audio" [ref=f1e358]
+            - cell "Duplicate Charge" [ref=f1e359]
+            - cell "$321.50" [ref=f1e360]
+            - cell [ref=f1e361]
+            - cell "Merchant 75%" [ref=f1e364]:
+              - generic [ref=f1e365]:
+                - generic [ref=f1e366]: Merchant
+                - generic "75%" [ref=f1e368]
+                - generic [ref=f1e370]: 75%
+          - row [ref=f1e371]:
+            - cell [ref=f1e372]:
+              - link "TX2009" [ref=f1e373] [cursor=pointer]:
+                - /url: /cases/24
+            - cell "Ines Moreau" [ref=f1e374]
+            - cell "Copper Kitchen" [ref=f1e375]
+            - cell "Refund Not Processed" [ref=f1e376]
+            - cell "$184.00" [ref=f1e377]
+            - cell [ref=f1e378]
+            - cell "Pending" [ref=f1e381]
+          - row [ref=f1e382]:
+            - cell [ref=f1e383]:
+              - link "TX2008" [ref=f1e384] [cursor=pointer]:
+                - /url: /cases/23
+            - cell "Hugo Almeida" [ref=f1e385]
+            - cell "Bluewater Swim" [ref=f1e386]
+            - cell "Not As Described" [ref=f1e387]
+            - cell "$48.50" [ref=f1e388]
+            - cell [ref=f1e389]
+            - cell "Card Member 55%" [ref=f1e392]:
+              - generic [ref=f1e393]:
+                - generic [ref=f1e394]: Card Member
+                - generic "55%" [ref=f1e396]
+                - generic [ref=f1e398]: 55%
+          - row [ref=f1e399]:
+            - cell [ref=f1e400]:
+              - link "TX2007" [ref=f1e401] [cursor=pointer]:
+                - /url: /cases/22
+            - cell "Grace Whitfield" [ref=f1e402]
+            - cell "Ironwood Tools" [ref=f1e403]
+            - cell "Item Not Received" [ref=f1e404]
+            - cell "$851.00" [ref=f1e405]
+            - cell [ref=f1e406]
+            - cell "Card Member 67%" [ref=f1e409]:
+              - generic [ref=f1e410]:
+                - generic [ref=f1e411]: Card Member
+                - generic "67%" [ref=f1e413]
+                - generic [ref=f1e415]: 67%
+          - row [ref=f1e416]:
+            - cell [ref=f1e417]:
+              - link "TX2006" [ref=f1e418] [cursor=pointer]:
+                - /url: /cases/21
+            - cell "Farid Haddad" [ref=f1e419]
+            - cell "Petal & Stem" [ref=f1e420]
+            - cell "Refund Not Processed" [ref=f1e421]
+            - cell "$713.50" [ref=f1e422]
+            - cell [ref=f1e423]
+            - cell "Merchant 29%" [ref=f1e426]:
+              - generic [ref=f1e427]:
+                - generic [ref=f1e428]: Merchant
+                - generic "29%" [ref=f1e430]
+                - generic [ref=f1e432]: 29%
+          - row [ref=f1e433]:
+            - cell [ref=f1e434]:
+              - link "TX2005" [ref=f1e435] [cursor=pointer]:
+                - /url: /cases/20
+            - cell "Elena Fischer" [ref=f1e436]
+            - cell "Atlas Luggage" [ref=f1e437]
+            - cell "Item Not Received" [ref=f1e438]
+            - cell "$576.00" [ref=f1e439]
+            - cell [ref=f1e440]
+            - cell "Merchant 88%" [ref=f1e443]:
+              - generic [ref=f1e444]:
+                - generic [ref=f1e445]: Merchant
+                - generic "88%" [ref=f1e447]
+                - generic [ref=f1e449]: 88%
+          - row [ref=f1e450]:
+            - cell [ref=f1e451]:
+              - link "TX2004" [ref=f1e452] [cursor=pointer]:
+                - /url: /cases/19
+            - cell "Devin Park" [ref=f1e453]
+            - cell "Circuit & Co" [ref=f1e454]
+            - cell "Duplicate Charge" [ref=f1e455]
+            - cell "$440.50" [ref=f1e456]
+            - cell [ref=f1e457]
+            - cell "Pending" [ref=f1e460]
+          - row [ref=f1e461]:
+            - cell [ref=f1e462]:
+              - link "TX2003" [ref=f1e463] [cursor=pointer]:
+                - /url: /cases/18
+            - cell "Carmen Ruiz" [ref=f1e464]
+            - cell "Verdant Grocers" [ref=f1e465]
+            - cell "Refund Not Processed" [ref=f1e466]
+            - cell "$303.00" [ref=f1e467]
+            - cell [ref=f1e468]
+            - cell "Card Member 83%" [ref=f1e471]:
+              - generic [ref=f1e472]:
+                - generic [ref=f1e473]: Card Member
+                - generic "83%" [ref=f1e475]
+                - generic [ref=f1e477]: 83%
+          - row [ref=f1e478]:
+            - cell [ref=f1e479]:
+              - link "TX2002" [ref=f1e480] [cursor=pointer]:
+                - /url: /cases/17
+            - cell "Ben Halloran" [ref=f1e481]
+            - cell "Lumen Home" [ref=f1e482]
+            - cell "Not As Described" [ref=f1e483]
+            - cell "$165.50" [ref=f1e484]
+            - cell [ref=f1e485]
+            - cell "Merchant 96%" [ref=f1e488]:
+              - generic [ref=f1e489]:
+                - generic [ref=f1e490]: Merchant
+                - generic "96%" [ref=f1e492]
+                - generic [ref=f1e494]: 96%
+          - row [ref=f1e495]:
+            - cell [ref=f1e496]:
+              - link "TX2001" [ref=f1e497] [cursor=pointer]:
+                - /url: /cases/16
+            - cell "Amara Osei" [ref=f1e498]
+            - cell "NorthPeak Outfitters" [ref=f1e499]
+            - cell "Item Not Received" [ref=f1e500]
+            - cell "$28.00" [ref=f1e501]
+            - cell [ref=f1e502]
+            - cell "Card Member 71%" [ref=f1e505]:
+              - generic [ref=f1e506]:
+                - generic [ref=f1e507]: Card Member
+                - generic "71%" [ref=f1e509]
+                - generic [ref=f1e511]: 71%
+          - row [ref=f1e512]:
+            - cell [ref=f1e513]:
+              - link "TX1015" [ref=f1e514] [cursor=pointer]:
+                - /url: /cases/15
+            - cell "Avery Stone" [ref=f1e515]
+            - cell "ArtSupplyHub" [ref=f1e516]
+            - cell "Item Not Received" [ref=f1e517]
+            - cell "$132.00" [ref=f1e518]
+            - cell [ref=f1e519]
+            - cell "Pending" [ref=f1e522]
+          - row [ref=f1e523]:
+            - cell [ref=f1e524]:
+              - link "TX1014" [ref=f1e525] [cursor=pointer]:
+                - /url: /cases/14
+            - cell "Jamie Fox" [ref=f1e526]
+            - cell "PetSupplyCo" [ref=f1e527]
+            - cell "Duplicate Charge" [ref=f1e528]
+            - cell "$54.00" [ref=f1e529]
+            - cell [ref=f1e530]
+            - cell "Merchant 96%" [ref=f1e533]:
+              - generic [ref=f1e534]:
+                - generic [ref=f1e535]: Merchant
+                - generic "96%" [ref=f1e537]
+                - generic [ref=f1e539]: 96%
+          - row [ref=f1e540]:
+            - cell [ref=f1e541]:
+              - link "TX1013" [ref=f1e542] [cursor=pointer]:
+                - /url: /cases/13
+            - cell "Skyler Vance" [ref=f1e543]
+            - cell "GlowBeauty" [ref=f1e544]
+            - cell "Not As Described" [ref=f1e545]
+            - cell "$65.00" [ref=f1e546]
+            - cell [ref=f1e547]
+            - cell "Merchant 71%" [ref=f1e550]:
+              - generic [ref=f1e551]:
+                - generic [ref=f1e552]: Merchant
+                - generic "71%" [ref=f1e554]
+                - generic [ref=f1e556]: 71%
+          - row [ref=f1e557]:
+            - cell [ref=f1e558]:
+              - link "TX1012" [ref=f1e559] [cursor=pointer]:
+                - /url: /cases/12
+            - cell "Harper Diaz" [ref=f1e560]
+            - cell "SportsGear Plus" [ref=f1e561]
+            - cell "Item Not Received" [ref=f1e562]
+            - cell "$210.00" [ref=f1e563]
+            - cell [ref=f1e564]
+            - cell "Card Member 67%" [ref=f1e567]:
+              - generic [ref=f1e568]:
+                - generic [ref=f1e569]: Card Member
+                - generic "67%" [ref=f1e571]
+                - generic [ref=f1e573]: 67%
+          - row [ref=f1e574]:
+            - cell [ref=f1e575]:
+              - link "TX1011" [ref=f1e576] [cursor=pointer]:
+                - /url: /cases/11
+            - cell "Casey Nolan" [ref=f1e577]
+            - cell "GourmetKitchen" [ref=f1e578]
+            - cell "Refund Not Processed" [ref=f1e579]
+            - cell "$175.00" [ref=f1e580]
+            - cell [ref=f1e581]
+            - cell "Card Member 79%" [ref=f1e584]:
+              - generic [ref=f1e585]:
+                - generic [ref=f1e586]: Card Member
+                - generic "79%" [ref=f1e588]
+                - generic [ref=f1e590]: 79%
+          - row [ref=f1e591]:
+            - cell [ref=f1e592]:
+              - link "TX1010" [ref=f1e593] [cursor=pointer]:
+                - /url: /cases/10
+            - cell "Riley Brooks" [ref=f1e594]
+            - cell "BookNook" [ref=f1e595]
+            - cell "Item Not Received" [ref=f1e596]
+            - cell "$25.00" [ref=f1e597]
+            - cell [ref=f1e598]
+            - cell "Pending" [ref=f1e601]
+          - row [ref=f1e602]:
+            - cell [ref=f1e603]:
+              - link "TX1009" [ref=f1e604] [cursor=pointer]:
+                - /url: /cases/9
+            - cell "Chris Nguyen" [ref=f1e605]
+            - cell "LuxeFashion" [ref=f1e606]
+            - cell "Item Not Received" [ref=f1e607]
+            - cell "$340.00" [ref=f1e608]
+            - cell [ref=f1e609]
+            - cell "Pending" [ref=f1e612]
+          - row [ref=f1e613]:
+            - cell [ref=f1e614]:
+              - link "TX1008" [ref=f1e615] [cursor=pointer]:
+                - /url: /cases/8
+            - cell "Morgan Patel" [ref=f1e616]
+            - cell "ElectroWorld" [ref=f1e617]
+            - cell "Duplicate Charge" [ref=f1e618]
+            - cell "$999.00" [ref=f1e619]
+            - cell [ref=f1e620]
+            - cell "Card Member 92%" [ref=f1e623]:
+              - generic [ref=f1e624]:
+                - generic [ref=f1e625]: Card Member
+                - generic "92%" [ref=f1e627]
+                - generic [ref=f1e629]: 92%
+          - row [ref=f1e630]:
+            - cell [ref=f1e631]:
+              - link "TX1007" [ref=f1e632] [cursor=pointer]:
+                - /url: /cases/7
+            - cell "Taylor Reyes" [ref=f1e633]
+            - cell "HomeGoods Direct" [ref=f1e634]
+            - cell "Not As Described" [ref=f1e635]
+            - cell "$220.00" [ref=f1e636]
+            - cell [ref=f1e637]
+            - cell "Pending" [ref=f1e640]
+          - row [ref=f1e641]:
+            - cell [ref=f1e642]:
+              - link "TX1006" [ref=f1e643] [cursor=pointer]:
+                - /url: /cases/6
+            - cell "Alex Kim" [ref=f1e644]
+            - cell "FreshBox Grocery" [ref=f1e645]
+            - cell "Not As Described" [ref=f1e646]
+            - cell "$45.00" [ref=f1e647]
+            - cell [ref=f1e648]
+            - cell "Card Member 14%" [ref=f1e651]:
+              - generic [ref=f1e652]:
+                - generic [ref=f1e653]: Card Member
+                - generic "14%" [ref=f1e655]
+                - generic [ref=f1e657]: 14%
+          - row [ref=f1e658]:
+            - cell [ref=f1e659]:
+              - link "TX1005" [ref=f1e660] [cursor=pointer]:
+                - /url: /cases/5
+            - cell "Dana White" [ref=f1e661]
+            - cell "QuickMart" [ref=f1e662]
+            - cell "Refund Not Processed" [ref=f1e663]
+            - cell "$60.00" [ref=f1e664]
+            - cell [ref=f1e665]
+            - cell "Merchant 63%" [ref=f1e668]:
+              - generic [ref=f1e669]:
+                - generic [ref=f1e670]: Merchant
+                - generic "63%" [ref=f1e672]
+                - generic [ref=f1e674]: 63%
+          - row [ref=f1e675]:
+            - cell [ref=f1e676]:
+              - link "TX1004" [ref=f1e677] [cursor=pointer]:
+                - /url: /cases/4
+            - cell "Sam Okafor" [ref=f1e678]
+            - cell "TechDeals Inc" [ref=f1e679]
+            - cell "Refund Not Processed" [ref=f1e680]
+            - cell "$499.00" [ref=f1e681]
+            - cell [ref=f1e682]
+            - cell "Card Member 83%" [ref=f1e685]:
+              - generic [ref=f1e686]:
+                - generic [ref=f1e687]: Card Member
+                - generic "83%" [ref=f1e689]
+                - generic [ref=f1e691]: 83%
+          - row [ref=f1e692]:
+            - cell [ref=f1e693]:
+              - link "TX1003" [ref=f1e694] [cursor=pointer]:
+                - /url: /cases/3
+            - cell "Jordan Lee" [ref=f1e695]
+            - cell "StyleWear Co" [ref=f1e696]
+            - cell "Item Not Received" [ref=f1e697]
+            - cell "$89.50" [ref=f1e698]
+            - cell [ref=f1e699]
+            - cell "Card Member 71%" [ref=f1e702]:
+              - generic [ref=f1e703]:
+                - generic [ref=f1e704]: Card Member
+                - generic "71%" [ref=f1e706]
+                - generic [ref=f1e708]: 71%
+          - row [ref=f1e709]:
+            - cell [ref=f1e710]:
+              - link "TX1002" [ref=f1e711] [cursor=pointer]:
+                - /url: /cases/2
+            - cell "Miguel Torres" [ref=f1e712]
+            - cell "GadgetHub" [ref=f1e713]
+            - cell "Item Not Received" [ref=f1e714]
+            - cell "$150.00" [ref=f1e715]
+            - cell [ref=f1e716]
+            - cell "Merchant 88%" [ref=f1e719]:
+              - generic [ref=f1e720]:
+                - generic [ref=f1e721]: Merchant
+                - generic "88%" [ref=f1e723]
+                - generic [ref=f1e725]: 88%
+          - row [ref=f1e726]:
+            - cell [ref=f1e727]:
+              - link "TX1001" [ref=f1e728] [cursor=pointer]:
+                - /url: /cases/1
+            - cell "Priya Sharma" [ref=f1e729]
+            - cell "BrewCo Online" [ref=f1e730]
+            - cell "Item Not Received" [ref=f1e731]
+            - cell "$299.00" [ref=f1e732]
+            - cell [ref=f1e733]
+            - cell "Card Member 75%" [ref=f1e736]:
+              - generic [ref=f1e737]:
+                - generic [ref=f1e738]: Card Member
+                - generic "75%" [ref=f1e740]
+                - generic [ref=f1e742]: 75%

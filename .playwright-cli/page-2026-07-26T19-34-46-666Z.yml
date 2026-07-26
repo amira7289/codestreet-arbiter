@@ -1,0 +1,15 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img "Dispute Resolution" [ref=e7]
+        - generic [ref=e12]:
+          - generic [ref=e13]: Dispute Resolution
+          - generic [ref=e14]: Issuer Arbitration Console
+      - navigation [ref=e15]:
+        - link "Dashboard" [ref=e16] [cursor=pointer]:
+          - /url: /
+        - link "Cases" [ref=e17] [cursor=pointer]:
+          - /url: /cases
+  - main [ref=e18]:
+    - paragraph [ref=e19]: Loading dashboard…
