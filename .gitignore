@@ -1,0 +1,20 @@
+# Python
+backend/venv/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/disputes.db
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.playwright-cli/
+
+# Editor / OS
+.DS_Store
+.vscode/
+
+# Local dev tooling (not part of the hackathon deliverable)
+.claude/
+.windsurf/
+.devin/
+squad-method/
