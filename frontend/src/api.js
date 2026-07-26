@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:8000";
+// Baked in at build time by Vite. Falls back to localhost so `npm run dev` needs no
+// configuration; a deployed build passes VITE_API_URL and points at the real API.
+const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {

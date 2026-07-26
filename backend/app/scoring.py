@@ -410,20 +410,51 @@ def score_case(case, evidence_list):
                       "Merchant photograph shows the goods intact and undamaged", e)
 
     # --- procedural --------------------------------------------------------
+    #
+    # The adverse inference turns on whether a party put anything PROBATIVE on the
+    # record, not on whether they filed a document. Testing mere presence rewarded
+    # filing something meaningless: a merchant who sent "we'll look into this" dodged
+    # the inference entirely while the card member still carried theirs. A filing that
+    # produced no signal is, for this purpose, the same as no filing.
     card_member_evidence = [e for e in evidence_list if e.submitted_by == "card_member"]
     merchant_evidence = [e for e in evidence_list if e.submitted_by == "merchant"]
 
-    if not merchant_evidence and card_member_evidence:
+    weighed = {i for s in signals for i in s.evidence_ids}
+
+    def _engaged(items):
+        """Did this party actually answer the case?
+
+        Two ways to qualify. Either a filing produced a signal, or it states a
+        reasoned denial — "our records show the consignment passed inspection" is a
+        position even though the scorecard awards it nothing. What does NOT qualify
+        is a filing that neither supports a finding nor contests one, because that is
+        silence with a covering note, and treating it as engagement is precisely the
+        loophole this rule exists to close.
+        """
+        for e in items:
+            if getattr(e, "id", None) in weighed:
+                return True
+            facts = getattr(e, "parsed_facts", None) or {}
+            if facts.get("merchant_denies_claim"):
+                return True
+        return False
+
+    # Never on a wholly empty case: with nothing from anyone there is nothing to draw
+    # an inference from, and that case resolves under the disclosed provisional-credit
+    # rule instead.
+    if evidence_list and not _engaged(merchant_evidence):
         _emit(signals, "no_merchant_evidence",
-              "No merchant-side records are on file; see the evidence-gathering log for "
-              "the sources queried")
+              "Merchant filed {} that the scorecard could read as supporting their "
+              "position; see the evidence-gathering log for the sources queried".format(
+                  "nothing" if not merchant_evidence else
+                  "{} document(s), none of which".format(len(merchant_evidence))))
 
     # Narrowed to the one claim type where a card member can reasonably be expected to
     # produce positive proof. Nobody can prove a parcel did not arrive, and the system
     # now gathers on both parties' behalf, so silence is much weaker evidence than it was.
     if case.claim_type == "not_as_described":
         has_proof = any(e.evidence_type in ("photo", "receipt") for e in card_member_evidence)
-        if not has_proof and merchant_evidence:
+        if not has_proof and not _engaged(card_member_evidence) and merchant_evidence:
             _emit(signals, "no_card_member_evidence",
                   "Card member produced neither a photograph nor a receipt, both of which "
                   "are obtainable for this claim type")

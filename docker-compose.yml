@@ -1,0 +1,23 @@
+# One command to run the whole thing:  docker compose up --build
+# Then open http://localhost:5173
+services:
+  api:
+    build: ./backend
+    ports: ["8000:8000"]
+    environment:
+      # Comma-separated. The frontend origin must appear here or every call fails CORS.
+      CORS_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+      DATABASE_PATH: /data/disputes.db
+    volumes:
+      - dispute-data:/data
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
+    ports: ["5173:80"]
+    depends_on: [api]
+
+volumes:
+  dispute-data:

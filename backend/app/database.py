@@ -1,7 +1,12 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = "sqlite:///./disputes.db"
+# Overridable so a container can put the file on a mounted volume. Without that the
+# database sits on an ephemeral disk and resets on every restart.
+DATABASE_PATH = os.environ.get("DATABASE_PATH", "./disputes.db")
+DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 
 # Background gather tasks hold a connection across their pacing delay, so the default
 # pool of 5 + 10 overflow is exhausted by a couple of dozen simultaneous runs and

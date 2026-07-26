@@ -138,10 +138,11 @@ check("score", "same number, different street AND city",
 names, winner, cm, m = signals_for(
     Case(),
     Ev("tracking_data", "Attempted delivery to 45 Oak Street, Springfield. Not signed by anyone."))
-# Nothing scored, so the case falls to the disclosed provisional-credit rule — which
-# is emitted as a visible zero-weight signal rather than resolved silently.
-check("score", "attempted delivery, nobody signed — no evidence either way",
-      (["provisional_credit_no_evidence"], "card_member", 0.0, 0.0),
+# The tracking record establishes nothing and takes no position, so the merchant
+# draws the adverse inference for having answered the case with a document the
+# scorecard cannot read as supporting them.
+check("score", "attempted delivery, nobody signed — merchant's filing proves nothing",
+      (["no_merchant_evidence"], "card_member", 15.0, 0.0),
       (names, winner, cm, m))
 
 names, winner, cm, m = signals_for(

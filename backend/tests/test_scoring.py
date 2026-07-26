@@ -73,12 +73,15 @@ def test_address_street_suffix_abbreviation_still_matches():
 
 
 def test_unparseable_address_is_indeterminate_and_awards_nobody():
+    """The address itself must score nothing for either side. The merchant still draws
+    the adverse inference, because a filing the scorecard cannot read is not a filing
+    that supports their position."""
     assert _address_verdict("Dunmore 41022", "23 Fernhill Ave, Dunmore") == "indeterminate"
     case = FakeCase(address="23 Fernhill Ave, Dunmore")
     signals, _, cm, m, _ = score_case(case, [tracking(status="delivered", delivered_at="Dunmore 41022")])
     assert "address_match" not in names(signals)
     assert "address_mismatch" not in names(signals)
-    assert (cm, m) == (0.0, 0.0)
+    assert names(signals) == ["no_merchant_evidence"]
 
 
 # --- delivery confirmation (D1) --------------------------------------------
@@ -338,3 +341,24 @@ def test_street_similarity_threshold_is_load_bearing():
 
     assert 0 < _STREET_SIMILARITY <= 1.0
     assert _address_verdict("5 Oak Street, Boston", "5 Oak St, Boston") == "match"
+
+
+def test_a_non_committal_filing_does_not_dodge_the_adverse_inference():
+    """The gaming vector: a merchant used to escape the inference by filing anything
+    at all. A note that neither supports a finding nor contests one is silence."""
+    case = FakeCase(claim_type="not_as_described")
+    waffle = FakeEvidence("chat_log", _mock_parse_evidence(
+        "chat_log", "We're sorry for the inconvenience, we'll look into this."))
+    signals, winner, cm, m, _ = score_case(case, [waffle])
+    assert "no_merchant_evidence" in names(signals)
+    assert winner == "card_member"
+
+
+def test_a_reasoned_denial_does_dodge_it():
+    """A denial is a position, not silence, even though the scorecard awards it nothing."""
+    case = FakeCase(claim_type="not_as_described")
+    denial = FakeEvidence("email", _mock_parse_evidence(
+        "email", "Our records show the consignment passed inspection before dispatch."))
+    signals, winner, _, _, _ = score_case(case, [denial])
+    assert "no_merchant_evidence" not in names(signals)
+    assert winner == "merchant"

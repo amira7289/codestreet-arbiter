@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -18,9 +20,14 @@ _DEV_ORIGINS = [
     for port in (5173, 5174, 5175, 4173)
 ]
 
+# A deployed frontend lives on a domain this list cannot know, so it is supplied at
+# runtime. Missing it is the single most likely cause of a deployment that renders
+# but shows no data.
+_EXTRA = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_DEV_ORIGINS,
+    allow_origins=_DEV_ORIGINS + _EXTRA,
     allow_methods=["*"],
     allow_headers=["*"],
 )
