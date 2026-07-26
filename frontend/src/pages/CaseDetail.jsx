@@ -143,7 +143,7 @@ function PartyPanel({ party, caseData, onSubmit }) {
       )}
 
       <div style={{ marginTop: 16, borderTop: "1px solid #e5e7eb", paddingTop: 12 }}>
-        <div style={{ fontSize: "0.8rem", fontWeight: 600 }}>Submit as {PARTY_LABEL[party].toLowerCase()}</div>
+        <div className="section-label">Add evidence</div>
         <EvidenceForm submittedBy={party} onSubmit={onSubmit} />
       </div>
     </section>

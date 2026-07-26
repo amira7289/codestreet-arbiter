@@ -364,6 +364,17 @@ a:hover { text-decoration: underline; }
 
 .btn--primary { background: var(--brand); border-color: var(--brand); color: #fff; }
 .btn--primary:hover:not(:disabled) { background: #0060b4; border-color: #0060b4; }
+/* Tinted to whichever party is filing, so the control reads as "you, acting" rather
+   than a generic submit. Driven by a custom property because an inline background
+   would be overridden by the :hover rule below. */
+.btn--party {
+  background: var(--btn-tint, var(--brand));
+  border-color: var(--btn-tint, var(--brand));
+  color: #fff;
+}
+.btn--party:hover:not(:disabled) { filter: brightness(0.9); }
+.btn--party:disabled { background: var(--surface); border-color: var(--line-strong); color: var(--ink-3); opacity: 1; }
+
 .btn--ghost { border-color: transparent; background: transparent; color: var(--ink-2); }
 .btn--ghost:hover:not(:disabled) { background: var(--surface-sunken); border-color: var(--line); }
 .btn--sm { padding: 4px 10px; font-size: 0.75rem; }
