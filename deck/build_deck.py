@@ -372,7 +372,7 @@ footer(s, 8)
 # ============================================================== 09 · impact ====
 s = blank(prs, NAVY)
 text(s, Inches(0.7), Inches(0.62), Inches(11.5), Inches(0.7),
-     "Measured Impact", size=34, bold=True, color=WHITE)
+     "Business Impact", size=34, bold=True, color=WHITE)
 text(s, Inches(0.7), Inches(1.5), Inches(11.3), Inches(0.4),
      "Every figure below is produced by GET /metrics on the running system, not asserted.",
      size=13, color=BLUE_LT, italic=True)
