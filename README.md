@@ -52,26 +52,22 @@ The decision never sits inside the model. Everything follows from that:
 
 ## Quick start
 
-**Docker — everything in one command:**
+**One process — the API also serves the built frontend:**
 
 ```bash
-docker compose up --build     # → http://localhost:5173
-```
-
-**Or run the two services directly:**
-
-```bash
-# Backend
 cd backend
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-python -m app.seed                 # 45 disputes, evidence produced by the connectors
-uvicorn app.main:app --port 8000
+python -m app.seed
+uvicorn app.main:app --port 8000     # → http://localhost:8000
+```
 
-# Frontend, in a second terminal
-cd frontend
-npm install
-npm run dev                        # → http://localhost:5173
+That is exactly what runs in production. For frontend development you want hot
+reload instead, which needs the two processes:
+
+```bash
+uvicorn app.main:app --port 8000   # terminal one, from backend/
+npm install && npm run dev         # terminal two, from frontend/ → :5173
 ```
 
 `ANTHROPIC_API_KEY` is **optional**. Set it for LLM-backed parsing and narration; without it a deterministic offline parser takes over and the whole app still works. The demo is designed to run with no network at all.
