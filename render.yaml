@@ -29,9 +29,12 @@ services:
   - type: web
     name: arbiter-web
     runtime: static
-    plan: free
+    # No `plan` here on purpose: static sites have no plans, and Render rejects the
+    # blueprint outright with "no such plan free for service type web" if one is set.
     rootDir: frontend
-    buildCommand: npm ci && npm run build
+    # --include=dev: Render's build containers set NODE_ENV=production, which
+    # makes plain `npm ci` skip devDependencies — and vite lives there.
+    buildCommand: npm ci --include=dev && npm run build
     staticPublishPath: dist
     envVars:
       # Vite inlines this at build time, so it must be present during the build,
