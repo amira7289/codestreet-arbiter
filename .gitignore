@@ -6,7 +6,7 @@ backend/disputes.db
 
 # Node
 frontend/node_modules/
-frontend/dist/
+
 # Browser-automation scratch output; playwright-cli drops these wherever it is run.
 .playwright-cli/
 

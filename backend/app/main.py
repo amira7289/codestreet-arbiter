@@ -1,6 +1,9 @@
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import models
@@ -44,7 +47,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(cases.router)
+# Namespaced under /api because the SPA owns /cases and /cases/:id as browser
+# routes. Without the prefix a browser navigating to /cases receives the JSON
+# list instead of the application.
+app.include_router(cases.router, prefix="/api")
 
 
 @app.get("/health")
@@ -52,7 +58,7 @@ def health():
     return {"status": "ok"}
 
 
-@app.get("/metrics")
+@app.get("/api/metrics")
 def metrics():
     """Pipeline health, computed live off the labelled corpus.
 
@@ -99,3 +105,30 @@ def metrics():
         },
         "latency_ms": {k: round(v, 3) for k, v in latency.items()},
     }
+
+
+# ---------------------------------------------------------------------------
+# Serve the built frontend from this same service, when it is present.
+#
+# One origin instead of two. That removes CORS from the picture entirely, removes
+# the build-time API URL, and removes the second deployment — which between them
+# accounted for every deployment failure this project hit. Locally nothing changes:
+# `npm run dev` still proxies to this API on :8000 and this block is skipped,
+# because frontend/dist only exists once someone has built it.
+# ---------------------------------------------------------------------------
+_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+
+if (_DIST / "index.html").is_file():
+    app.mount("/assets", StaticFiles(directory=_DIST / "assets"), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_spa(full_path: str):
+        """Anything not claimed by an API route is the single-page app.
+
+        Registered last on purpose: FastAPI matches in declaration order, so
+        /cases, /metrics, /health and /docs are all resolved before this.
+        """
+        candidate = _DIST / full_path
+        if full_path and candidate.is_file() and _DIST in candidate.resolve().parents:
+            return FileResponse(candidate)
+        return FileResponse(_DIST / "index.html")

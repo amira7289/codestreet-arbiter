@@ -178,57 +178,57 @@ check("score", "cardholder photo showing damage",
 heading("3. NEGOTIATION — settle before adjudicating")
 
 client = TestClient(app)
-case_id = client.post("/cases", json={
+case_id = client.post("/api/cases", json={
     "transaction_id": "TXVERIFY", "card_member_name": "Sample Cardholder",
     "card_member_address": "1 Sample Way, Testburgh", "merchant_name": "Sample Merchant",
     "amount": 200.0, "claim_type": "duplicate_charge", "claim_text": "Charged twice.",
 }).json()["id"]
 
-made = client.post(f"/cases/{case_id}/offers", json={
+made = client.post(f"/api/cases/{case_id}/offers", json={
     "proposed_by": "merchant", "offer_type": "partial_refund", "amount": 120.0,
     "message": "Meet in the middle."})
 check("negotiate", "merchant proposes a $120 partial refund", (201, "open"),
       (made.status_code, made.json()["status"]))
 
-dup = client.post(f"/cases/{case_id}/offers", json={
+dup = client.post(f"/api/cases/{case_id}/offers", json={
     "proposed_by": "merchant", "offer_type": "full_refund"})
 check("negotiate", "same side offers again while awaiting a reply", 409, dup.status_code)
 
-bad = client.post(f"/cases/{case_id}/offers", json={
+bad = client.post(f"/api/cases/{case_id}/offers", json={
     "proposed_by": "card_member", "offer_type": "partial_refund", "amount": 999999.0})
 check("negotiate", "settlement larger than the disputed amount", 422, bad.status_code)
 
-counter = client.post(f"/cases/{case_id}/offers", json={
+counter = client.post(f"/api/cases/{case_id}/offers", json={
     "proposed_by": "card_member", "offer_type": "full_refund", "message": "Full or we adjudicate."})
-offers = {o["id"]: o["status"] for o in client.get(f"/cases/{case_id}").json()["offers"]}
+offers = {o["id"]: o["status"] for o in client.get(f"/api/cases/{case_id}").json()["offers"]}
 check("negotiate", "cardholder counters — the earlier offer is retired",
       ("superseded", "open"),
       (offers[made.json()["id"]], offers[counter.json()["id"]]))
 
-client.post(f"/cases/{case_id}/offers/{counter.json()['id']}/respond", json={"action": "accept"})
-settled = client.get(f"/cases/{case_id}").json()
+client.post(f"/api/cases/{case_id}/offers/{counter.json()['id']}/respond", json={"action": "accept"})
+settled = client.get(f"/api/cases/{case_id}").json()
 check("negotiate", "merchant accepts — case settles with NO verdict",
       ("settled", None), (settled["status"], settled["verdict"]))
 
 check("negotiate", "adjudicating a settled case is refused", 409,
-      client.post(f"/cases/{case_id}/resolve").status_code)
+      client.post(f"/api/cases/{case_id}/resolve").status_code)
 
 
 # ==========================================================================
 heading("4. FORECAST — identical for both parties, records nothing")
 
-fc_case = client.post("/cases", json={
+fc_case = client.post("/api/cases", json={
     "transaction_id": "TX1001", "card_member_name": "Priya Sharma",
     "card_member_address": "45 Oak Street, Springfield", "merchant_name": "BrewCo Online",
     "amount": 299.0, "claim_type": "item_not_received", "claim_text": "Never arrived.",
 }).json()["id"]
-client.post(f"/cases/{fc_case}/gather")
+client.post(f"/api/cases/{fc_case}/gather")
 
-first = client.get(f"/cases/{fc_case}/forecast").json()
-second = client.get(f"/cases/{fc_case}/forecast").json()
+first = client.get(f"/api/cases/{fc_case}/forecast").json()
+second = client.get(f"/api/cases/{fc_case}/forecast").json()
 check("forecast", "two reads return the identical forecast", True, first == second)
 check("forecast", "forecast records no verdict on the case", None,
-      client.get(f"/cases/{fc_case}").json()["verdict"])
+      client.get(f"/api/cases/{fc_case}").json()["verdict"])
 check("forecast", "TX1001 (carrier never shipped it) favours the card member",
       "card_member", first["winner"])
 
@@ -236,7 +236,7 @@ check("forecast", "TX1001 (carrier never shipped it) favours the card member",
 # ==========================================================================
 heading("5. READABLE FACTS — what the parties actually see")
 
-detail = client.get(f"/cases/{fc_case}").json()
+detail = client.get(f"/api/cases/{fc_case}").json()
 tracking = next((e for e in detail["evidence"] if e["evidence_type"] == "tracking_data"), None)
 check("readable", "tracking evidence renders as English, not JSON",
       True,

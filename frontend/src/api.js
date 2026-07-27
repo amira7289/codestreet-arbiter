@@ -4,8 +4,14 @@
 // Render's blueprint supplies a cross-service reference as a bare hostname with no
 // scheme ("arbiter-api.onrender.com"), which fetch() treats as a relative path. Add
 // https:// when it is missing rather than making the deploy config paste URLs by hand.
+// Same origin in production: the API is served by the same process as this
+// bundle, under /api. In dev the Vite server is separate, so point at the
+// backend directly.
+const FALLBACK = import.meta.env.DEV ? "http://localhost:8000/api" : "/api";
+
 function resolveBase(raw) {
-  const value = (raw ?? "http://localhost:8000").trim().replace(/\/+$/, "");
+  const value = (raw ?? FALLBACK).trim().replace(/\/+$/, "");
+  if (value.startsWith("/")) return value;
   return /^https?:\/\//.test(value) ? value : `https://${value}`;
 }
 

@@ -87,7 +87,7 @@ cd backend
 pytest tests -q             # 92 tests
 python -m app.evaluate      # accuracy, fairness, calibration, latency
 python verify_examples.py   # 27 worked examples: input, expected, actual
-curl localhost:8000/metrics # the same figures, live
+curl localhost:8000/api/metrics  # the same figures, live
 ```
 
 `verify_examples.py` is the fastest way to judge this without reading the code. It prints every input, what should happen, and what did:
@@ -224,15 +224,15 @@ deck/                    the pitch deck and the script that generates it
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/cases` | queue, with a verdict summary per row |
-| `GET` | `/cases/{id}` | full case: evidence, signals, verdict, offers, gather log |
-| `POST` | `/cases/{id}/gather` | run the connectors (`?async_mode=true` to stream) |
-| `POST` | `/cases/{id}/evidence` | file a document; withdraws a standing verdict |
-| `POST` | `/cases/{id}/resolve` | adjudicate |
-| `GET` | `/cases/{id}/forecast` | what the scorecard *would* rule; records nothing |
-| `POST` | `/cases/{id}/offers` | propose settlement terms |
-| `POST` | `/cases/{id}/offers/{offer_id}/respond` | accept or decline |
-| `GET` | `/metrics` | accuracy, fairness, calibration, latency |
+| `GET` | `/api/cases` | queue, with a verdict summary per row |
+| `GET` | `/api/cases/{id}` | full case: evidence, signals, verdict, offers, gather log |
+| `POST` | `/api/cases/{id}/gather` | run the connectors (`?async_mode=true` to stream) |
+| `POST` | `/api/cases/{id}/evidence` | file a document; withdraws a standing verdict |
+| `POST` | `/api/cases/{id}/resolve` | adjudicate |
+| `GET` | `/api/cases/{id}/forecast` | what the scorecard *would* rule; records nothing |
+| `POST` | `/api/cases/{id}/offers` | propose settlement terms |
+| `POST` | `/api/cases/{id}/offers/{offer_id}/respond` | accept or decline |
+| `GET` | `/api/metrics` | accuracy, fairness, calibration, latency |
 
 Interactive docs at `/docs`.
 
@@ -242,11 +242,22 @@ Interactive docs at `/docs`.
 
 Three values are configurable, and **all three must be set** or a deployment renders but shows no data:
 
+`render.yaml` deploys **one** service. The frontend is a prebuilt bundle committed at
+`frontend/dist` and served by the same FastAPI process as the API, under a single
+origin — which removes CORS, the build-time API URL and the second deployment all at
+once. Those three were the source of every deployment failure this project hit, and
+keeping npm off the build host removed the rest.
+
+Rebuild the bundle after any frontend change:
+
+```bash
+cd frontend && VITE_API_URL= npm run build && git add -f dist
+```
+
 | Variable | Where | Purpose |
 |---|---|---|
-| `VITE_API_URL` | frontend, **build time** | API origin, inlined into the bundle by Vite |
-| `CORS_ORIGINS` | backend, runtime | comma-separated frontend origins to allow |
 | `DATABASE_PATH` | backend, runtime | point at a mounted volume, or SQLite resets on restart |
+| `CORS_ORIGINS` | backend, runtime | only needed if the frontend is hosted separately |
 
 CI (`.github/workflows/ci.yml`) runs the suite, the accuracy report and the worked examples on every push — with **no API key**, because the offline path is what the demo runs, so that is the path worth proving.
 
