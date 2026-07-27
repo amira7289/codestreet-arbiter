@@ -42,7 +42,7 @@ services:
     # an incomplete tree, and the build then fails with `vite: not found`.
     buildCommand: >-
       cd frontend &&
-      (npm ci --include=dev --no-audit --no-fund || true) &&
+      (timeout 240 npm ci --include=dev --no-audit --no-fund || true) &&
       { [ -x node_modules/.bin/vite ] || { rm -rf node_modules; npm install --include=dev --no-audit --no-fund; }; } &&
       npm run build
     staticPublishPath: frontend/dist
