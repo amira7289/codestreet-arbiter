@@ -23,27 +23,49 @@ jobs:
         run: python verify_examples.py
         working-directory: backend
 
-  frontend:
+  frontend-bundle:
+    # Does NOT build. frontend/dist is committed and served directly by the API, so
+    # the risk worth guarding is not "does it compile" — it is "did someone change
+    # frontend source and forget to rebuild the bundle". Building here would also
+    # mean running npm, which hangs on these runners for eight minutes and then
+    # exits 0 with an incomplete tree.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        # No npm cache on purpose: restoring it is the most reported trigger for
-        # `npm ci` hanging and then exiting 0 with "Exit handler never called!".
-        # This project installs in ~15s cold, so the cache buys nothing anyway.
-        with: { node-version: "20" }
-      - name: Install
-        working-directory: frontend
-        # `npm install`, not `npm ci`. On these runners npm ci hangs for eight
-        # minutes and then exits 0 with "Exit handler never called!" and an
-        # incomplete node_modules, so the build fails pointing at vite. Bounding it
-        # with `timeout` did not help either: npm's orphaned children keep the step
-        # alive after the parent is killed. npm install honours the lockfile and
-        # completes in seconds, which is the trade worth making here.
+        # Full history: the check compares commit timestamps.
+        with: { fetch-depth: 0 }
+
+      - name: Committed bundle is present and coherent
         run: |
           set -eu
-          npm install --include=dev --no-audit --no-fund
-          # Verify rather than trust an exit code, given the above.
-          node_modules/.bin/vite --version
-      - run: npm run build
-        working-directory: frontend
+          test -f frontend/dist/index.html || {
+            echo "::error::frontend/dist/index.html is missing. Run: cd frontend && VITE_API_URL= npm run build && git add -f dist"
+            exit 1
+          }
+          # Every asset index.html points at must actually be committed, or the
+          # deployed page loads and renders nothing.
+          missing=0
+          for ref in $(grep -o '/assets/[A-Za-z0-9._-]*' frontend/dist/index.html | sort -u); do
+            if [ ! -f "frontend/dist${ref}" ]; then
+              echo "::error::index.html references ${ref} but frontend/dist${ref} is not committed"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ]
+          echo "bundle ok: $(ls frontend/dist/assets | tr '\n' ' ')"
+
+      - name: Bundle is not stale
+        run: |
+          set -eu
+          src=$(git log -1 --format=%ct -- \
+            frontend/src frontend/index.html frontend/package.json frontend/vite.config.js)
+          dist=$(git log -1 --format=%ct -- frontend/dist)
+          if [ -z "$dist" ] || [ "$src" -gt "$dist" ]; then
+            echo "::error::Frontend source changed after the last bundle commit. The deployed"
+            echo "::error::site serves frontend/dist, so this change would not appear."
+            echo "::error::Fix: cd frontend && VITE_API_URL= npm run build && git add -f dist"
+            echo "  last source commit: $(git log -1 --format='%h %ci %s' -- frontend/src frontend/index.html frontend/package.json frontend/vite.config.js)"
+            echo "  last bundle commit: $(git log -1 --format='%h %ci %s' -- frontend/dist)"
+            exit 1
+          fi
+          echo "bundle is current (source $src <= dist $dist)"
