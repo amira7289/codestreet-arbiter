@@ -38,12 +38,13 @@ services:
     #
     # --include=dev: Render's build containers set NODE_ENV=production, which makes
     # plain `npm ci` skip devDependencies — and vite lives there.
-    # Same defence as CI: npm can exit 0 after "Exit handler never called!" with
-    # an incomplete tree, and the build then fails with `vite: not found`.
+    # `npm install`, not `npm ci`: npm ci hangs on these builders and then exits 0
+    # with an incomplete tree, so the build dies with `vite: not found`. install
+    # honours the lockfile and finishes in seconds.
     buildCommand: >-
       cd frontend &&
-      (timeout 240 npm ci --include=dev --no-audit --no-fund || true) &&
-      { [ -x node_modules/.bin/vite ] || { rm -rf node_modules; npm install --include=dev --no-audit --no-fund; }; } &&
+      npm install --include=dev --no-audit --no-fund &&
+      node_modules/.bin/vite --version &&
       npm run build
     staticPublishPath: frontend/dist
     envVars:

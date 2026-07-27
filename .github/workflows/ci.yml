@@ -32,23 +32,18 @@ jobs:
         # `npm ci` hanging and then exiting 0 with "Exit handler never called!".
         # This project installs in ~15s cold, so the cache buys nothing anyway.
         with: { node-version: "20" }
-      - name: Install (verified)
+      - name: Install
         working-directory: frontend
+        # `npm install`, not `npm ci`. On these runners npm ci hangs for eight
+        # minutes and then exits 0 with "Exit handler never called!" and an
+        # incomplete node_modules, so the build fails pointing at vite. Bounding it
+        # with `timeout` did not help either: npm's orphaned children keep the step
+        # alive after the parent is killed. npm install honours the lockfile and
+        # completes in seconds, which is the trade worth making here.
         run: |
           set -eu
-          # --include=dev guards against NODE_ENV=production (or an omit=dev npm
-          # config) silently skipping devDependencies, which is where vite lives.
-          # Bounded: the failing runs hung here for eight minutes before exiting 0.
-          timeout 240 npm ci --include=dev --no-audit --no-fund || true
-          # npm can abort with "Exit handler never called!" and still exit 0, leaving
-          # node_modules incomplete. The build then dies with `vite: not found`, which
-          # points at the wrong thing entirely. Check the binary exists rather than
-          # trusting the exit code, and fall back to a plain install.
-          if [ ! -x node_modules/.bin/vite ]; then
-            echo "npm ci did not produce a usable tree — retrying with npm install"
-            rm -rf node_modules
-            npm install --include=dev --no-audit --no-fund
-          fi
+          npm install --include=dev --no-audit --no-fund
+          # Verify rather than trust an exit code, given the above.
           node_modules/.bin/vite --version
       - run: npm run build
         working-directory: frontend
