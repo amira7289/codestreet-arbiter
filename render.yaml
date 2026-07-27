@@ -37,6 +37,10 @@ services:
     buildCommand: npm ci --include=dev && npm run build
     staticPublishPath: dist
     envVars:
+      # Pinned so the build is reproducible: Vite 5 needs Node 18+, and a default
+      # that drifts is a failure that appears months later for no visible reason.
+      - key: NODE_VERSION
+        value: "20.11.1"
       # Vite inlines this at build time, so it must be present during the build,
       # not at runtime.
       - key: VITE_API_URL
